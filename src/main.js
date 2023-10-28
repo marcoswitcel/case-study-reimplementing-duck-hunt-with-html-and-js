@@ -14,7 +14,8 @@ const ctx = canvas.getContext('2d');
 
 const image = new Image;
 
-image.src = '/public/assets/NES - Duck Hunt - The Dog.png';
+// @todo João, ajustar essa urls para não serem fixas
+image.src = '/public/assets/NES - Duck Hunt - The Dog - transparent.png';
 
 function main(timestamp) {
     if (!timestamp) requestAnimationFrame(main);
@@ -23,6 +24,8 @@ function main(timestamp) {
     ctx.fillStyle = '#4da4ff';
     ctx.fillRect(0, 0, NES.width, NES.height);
     
+    // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados.
+    // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let offsetX = ~~((timestamp / (100)) % 80);
     let offsetY = NES.height * 0.6;
