@@ -2,13 +2,16 @@ import { createCanvas } from './utils.js';
 
 console.log('olá mundo duck hunt');
 
-const canvas = createCanvas(256, 240, document.body);
+const NES = { width: 256, height: 240, };
+
+const canvas = createCanvas(NES.width, NES.height, document.body);
 canvas.style.imageRendering = 'pixelated';
 const ctx = canvas.getContext('2d');
 
+
 // background
 ctx.fillStyle = '#4da4ff';
-ctx.fillRect(0, 0, 256, 240);
+ctx.fillRect(0, 0, NES.width, NES.height);
 
 
 const image = new Image;
