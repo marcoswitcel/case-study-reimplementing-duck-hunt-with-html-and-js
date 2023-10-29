@@ -1,6 +1,6 @@
 
 export class Sprite {
-    
+
     /**
      * @type {CanvasImageSource}
      */
@@ -24,17 +24,20 @@ export class Sprite {
     height;
 
     /**
+     * @param {CanvasImageSource} source
      * @param {number} offsetX
      * @param {number} offsetY 
      * @param {number} height 
      * @param {number} width 
      */
     constructor(
+        source,
         offsetX,
         offsetY,
         width,
         height,
     ) {
+        this.source = source;
         this.offsetX = offsetX;
         this.offsetY = offsetY; 
         this.width = width;

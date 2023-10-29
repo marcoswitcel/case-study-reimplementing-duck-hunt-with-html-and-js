@@ -1,5 +1,60 @@
-import { AnimatedSprite } from './sprites.js';
+import { AnimatedSprite, Sprite } from './sprites.js';
 import { createCanvas } from './utils.js';
+
+/**
+ * @typedef {{ x: number, y: number }} Vector2
+ */
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * 
+ * @returns {Vector2}
+ */
+const vec2 = (x, y) => ({ x, y });
+
+/**
+ * @note Não funciona com número muitos grandes 2e22 por exemplo
+ * 
+ * @param {number} n 
+ * @returns {boolean}
+ */
+const is_integer = (n) => n === ~~n;
+
+class Entity {
+    
+    /**
+     * @type {Vector2}
+     */
+    position;
+
+    /**
+     * @type {'dog' | 'duck'}
+     */
+    type;
+
+    /**
+     * @type {Sprite | AnimatedSprite | null}
+     */
+    renderable;
+
+    /**
+     * 
+     * @param {Vector2} position 
+     * @param {'dog' | 'duck'} type 
+     * @param {Sprite | AnimatedSprite | null} renderable
+     */
+    constructor(
+        type,
+        position,
+        renderable,
+    ) {
+        this.type = type;
+        this.position = position;
+        this.renderable = renderable;
+    }
+}
 
 console.log('olá mundo duck hunt');
 
@@ -15,6 +70,19 @@ const image = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 image.src = '/public/assets/NES - Duck Hunt - The Dog - transparent.png';
 
+const dog = new Entity(
+    'dog',
+    vec2(NES.width * 0.5, NES.height * 0.5),
+    new AnimatedSprite(56, 44, [new Sprite(image, 0, 13, 56, 44)], 1)
+);
+
+/**
+ * @type {Entity[]}
+ */
+const entities = [];
+
+entities.push(dog);
+
 function main(timestamp) {
     if (!timestamp) requestAnimationFrame(main);
 
@@ -29,6 +97,22 @@ function main(timestamp) {
     let offsetY = NES.height * 0.6;
     
     ctx.drawImage(image, i * 56, 13, 56, 44, offsetX, offsetY, 56, 44);
+
+    teste: {
+        
+        for (const entity of entities) {
+            if (!entity.renderable) continue;
+
+            /**
+             * @type {Sprite}
+             */
+            const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[0] : entity.renderable;
+            
+            console.assert(is_integer(frame.offsetX))
+            ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY - 100, 56, 44);
+        }
+        
+    }
 
     requestAnimationFrame(main);
 }
