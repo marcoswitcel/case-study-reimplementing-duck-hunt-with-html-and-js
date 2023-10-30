@@ -102,7 +102,8 @@ const backgrounds = [ backgroundSprite ];
 const entities = [];
 
 entities.push(dog);
-entities.push(duck);
+// @todo João, desabilitado
+// entities.push(duck);
 
 function main(timestamp) {
     if (!timestamp) requestAnimationFrame(main);
