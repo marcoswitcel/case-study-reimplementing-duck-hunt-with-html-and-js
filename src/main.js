@@ -70,12 +70,20 @@ const image = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 image.src = '/public/assets/NES - Duck Hunt - The Dog - transparent.png';
 
+const background = new Image;
+
+// @todo João, ajustar essa urls para não serem fixas
+background.src = '/public/assets/NES - Duck Hunt - Backgrounds - transparent.png';
+
 const dog = new Entity(
     'dog',
     vec2(NES.width * 0.5, NES.height * 0.5),
     new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1)
 );
 
+const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
+
+const backgrounds = [ backgroundSprite ];
 
 /**
  * @type {Entity[]}
@@ -96,6 +104,10 @@ function main(timestamp) {
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let offsetX = ~~((timestamp / (100)) % 80);
     let offsetY = NES.height * 0.6;
+
+    for (const current of backgrounds) {
+        ctx.drawImage(current.source, current.offsetX, current.offsetY, current.width, current.height);
+    }
 
     for (const entity of entities) {
         if (!entity.renderable) continue;
