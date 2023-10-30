@@ -81,6 +81,17 @@ const dog = new Entity(
     new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1)
 );
 
+const duckImage = new Image;
+
+// @todo João, ajustar essa urls para não serem fixas
+duckImage.src = '/public/assets/NES - Duck Hunt - Ducks.png';
+
+const duck = new Entity(
+    'duck',
+    vec2(NES.width * 0.5, NES.height * 0.5),
+    new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1)
+);
+
 const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
 
 const backgrounds = [ backgroundSprite ];
@@ -91,6 +102,7 @@ const backgrounds = [ backgroundSprite ];
 const entities = [];
 
 entities.push(dog);
+entities.push(duck);
 
 function main(timestamp) {
     if (!timestamp) requestAnimationFrame(main);
@@ -102,6 +114,7 @@ function main(timestamp) {
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
+    let iDuck = ~~((timestamp / (1000 / 6)) % 3);
     let offsetX = ~~((timestamp / (100)) % 80);
     let offsetY = NES.height * 0.6;
 
@@ -112,10 +125,11 @@ function main(timestamp) {
     for (const entity of entities) {
         if (!entity.renderable) continue;
 
+        const index = (entity.type === 'duck') ? iDuck : i;
         /**
          * @type {Sprite}
          */
-        const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[i] : entity.renderable;
+        const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[index] : entity.renderable;
         
         console.assert(is_integer(frame.offsetX))
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY, frame.width, frame.height);
