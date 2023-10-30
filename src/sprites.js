@@ -104,6 +104,8 @@ export const makeFrameSequence = (image, offsetX, offsetY, width, height, totalN
      */
     const frames = [];
 
+    if (totalNumberOfFrames === 0  || perRow === 0) return frames; // @note Evitando loops e outros bugs
+
     for (let rowIndex = 0; rowIndex < Math.ceil(totalNumberOfFrames / perRow); rowIndex ++ )  {
         for (let colIndex = 0; colIndex < perRow; colIndex++) {
             const sprite = new Sprite(

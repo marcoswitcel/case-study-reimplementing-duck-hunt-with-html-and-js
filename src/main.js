@@ -70,20 +70,12 @@ const image = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 image.src = '/public/assets/NES - Duck Hunt - The Dog - transparent.png';
 
-// @todo João, criar uma função auxiliar para montar essas sequências de frames
 const dog = new Entity(
     'dog',
     vec2(NES.width * 0.5, NES.height * 0.5),
-    new AnimatedSprite(56, 44, [
-        new Sprite(image, 0, 13, 56, 44),
-        new Sprite(image, 56, 13, 56, 44),
-        new Sprite(image, 56 * 2, 13, 56, 44),
-        new Sprite(image, 56 * 3, 13, 56, 44),
-    ], 1)
+    new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1)
 );
 
-// dog.renderable.frames = makeFrameSequence(image, 0, 13, 56, 44, 4, 4);
-// console.log(JSON.stringify(dog.renderable.frames) === JSON.stringify(makeFrameSequence(image, 0, 13, 56, 44, 4, 4)));
 
 /**
  * @type {Entity[]}
