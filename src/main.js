@@ -1,4 +1,4 @@
-import { AnimatedSprite, Sprite } from './sprites.js';
+import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
 import { createCanvas } from './utils.js';
 
 /**
@@ -81,6 +81,9 @@ const dog = new Entity(
         new Sprite(image, 56 * 3, 13, 56, 44),
     ], 1)
 );
+
+// dog.renderable.frames = makeFrameSequence(image, 0, 13, 56, 44, 4, 4);
+// console.log(JSON.stringify(dog.renderable.frames) === JSON.stringify(makeFrameSequence(image, 0, 13, 56, 44, 4, 4)));
 
 /**
  * @type {Entity[]}

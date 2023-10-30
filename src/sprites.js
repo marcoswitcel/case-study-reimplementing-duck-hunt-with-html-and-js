@@ -85,3 +85,38 @@ export class AnimatedSprite {
         this.lengthTime = lengthTime; 
     }
 }
+
+/**
+ * 
+ * @param {CanvasImageSource} image 
+ * @param {number} offsetX 
+ * @param {number} offsetY 
+ * @param {number} width 
+ * @param {number} height 
+ * @param {number} totalNumberOfFrames 
+ * @param {number} perRow 
+ * 
+ * @returns {Sprite[]}
+ */
+export const makeFrameSequence = (image, offsetX, offsetY, width, height, totalNumberOfFrames, perRow) => {
+    /**
+     * @type {Sprite[]}
+     */
+    const frames = [];
+
+    for (let rowIndex = 0; rowIndex < Math.ceil(totalNumberOfFrames / perRow); rowIndex ++ )  {
+        for (let colIndex = 0; colIndex < perRow; colIndex++) {
+            const sprite = new Sprite(
+                image,
+                offsetX + (colIndex * width),
+                offsetY + (rowIndex * height),
+                width,
+                height
+            );
+
+            frames.push(sprite);
+        }
+    }
+
+    return frames;
+}
