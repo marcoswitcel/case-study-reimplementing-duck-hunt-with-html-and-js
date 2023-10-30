@@ -118,7 +118,7 @@ function main(timestamp) {
         const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[i] : entity.renderable;
         
         console.assert(is_integer(frame.offsetX))
-        ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY, 56, 44);
+        ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY, frame.width, frame.height);
     }
 
     requestAnimationFrame(main);
