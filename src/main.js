@@ -91,28 +91,22 @@ function main(timestamp) {
     ctx.fillStyle = '#4da4ff';
     ctx.fillRect(0, 0, NES.width, NES.height);
     
-    // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados.
+    // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let offsetX = ~~((timestamp / (100)) % 80);
     let offsetY = NES.height * 0.6;
-    
-    ctx.drawImage(image, i * 56, 13, 56, 44, offsetX, offsetY, 56, 44);
 
-    teste: {
-        
-        for (const entity of entities) {
-            if (!entity.renderable) continue;
+    for (const entity of entities) {
+        if (!entity.renderable) continue;
 
-            /**
-             * @type {Sprite}
-             */
-            const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[i] : entity.renderable;
-            
-            console.assert(is_integer(frame.offsetX))
-            ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY - 100, 56, 44);
-        }
+        /**
+         * @type {Sprite}
+         */
+        const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[i] : entity.renderable;
         
+        console.assert(is_integer(frame.offsetX))
+        ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, offsetX, offsetY, 56, 44);
     }
 
     requestAnimationFrame(main);
