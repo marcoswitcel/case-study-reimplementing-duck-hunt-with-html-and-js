@@ -135,7 +135,7 @@ function main(timestamp) {
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let iDuck = ~~((timestamp / (1000 / 6)) % 3);
-    let offsetX = ~~((timestamp / (100)) % 80);
+    let offsetX = ~~((timestamp / (100)) % 240);
     let offsetY = NES.height * 0.6;
 
     // @todo João, temporário
