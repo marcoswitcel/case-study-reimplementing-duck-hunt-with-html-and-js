@@ -100,7 +100,7 @@ const duckImage = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
 // @todo João, fazer uma versão com fundo transparente no GIMP
-duckImage.src = '/public/assets/NES - Duck Hunt - Ducks.png';
+duckImage.src = '/public/assets/NES - Duck Hunt - Ducks - transparent.png';
 
 const duck = new Entity(
     'duck',
