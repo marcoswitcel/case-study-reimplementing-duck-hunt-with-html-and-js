@@ -114,6 +114,70 @@ const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
 const backgrounds = [ backgroundSprite ];
 
 /**
+ * @typedef {{
+ *   target: object,
+ *   from: number,
+ *   state: 'done' | 'started' | 'not initialized',
+ *   to: number,
+ *   totalTime: number,
+ *   time: number,
+ *   next: Interpolation | null
+ * }} Interpolation
+ */
+
+/**
+ * @type {Interpolation[]}
+ */
+let interpolations = [
+    {
+        target: (value) => { duck.position.y = ~~(value) },
+        from: 0,
+        to: 100,
+        state: 'not initialized',
+        time: 2,
+        totalTime: 0,
+        next: {
+            target: (value) => { duck.position.y = ~~(value) },
+            from: 100,
+            to: 0,
+            state: 'not initialized',
+            time: 2,
+            totalTime: 0,
+            next: null
+        }
+    }
+];
+
+function *dogAnimation(dog, timestamp) {
+    const initialTimestamp = timestamp;
+    const from = 0;
+    const to = 200;
+    const totalTime = 2;
+
+    // seta o início
+    dog.position.x = ~~(from);
+
+    while (true) {
+        const currentTimestamp = yield;
+        
+        if (((currentTimestamp - initialTimestamp) / 1000) > totalTime) break;
+
+        const deltaTimePast = (currentTimestamp - initialTimestamp) / 1000;
+        const newX = from + (deltaTimePast / totalTime) * (to - from);
+
+        // aplicando 
+        dog.position.x = ~~(newX);
+    }
+    
+    return true;
+}
+
+/**
+ * @type {Interpolation[]}
+ */
+const toAdd = [];
+
+/**
  * @type {Entity[]}
  */
 const entities = [];
@@ -122,7 +186,10 @@ entities.push(dog);
 entities.push(duck);
 
 function main(timestamp) {
-    if (!timestamp) requestAnimationFrame(main);
+    if (!timestamp) {
+        requestAnimationFrame(main);
+        return;
+    }
 
     // blue background
     ctxLayer02.fillStyle = '#4da4ff';
@@ -143,6 +210,33 @@ function main(timestamp) {
     dog.position.y = offsetY;
 
     duck.position.x = offsetX;
+
+    for (const interpolation of interpolations)
+    {
+        break; // Disabilitado
+        if (interpolation.state === 'done') continue;
+        if (interpolation.state === 'not initialized') {
+            interpolation.target(interpolation.from);
+            interpolation.state = 'started';
+            interpolation.totalTime = timestamp
+        }
+        const delta = (timestamp - interpolation.totalTime) / 1000;
+        const result = interpolation.from + (delta / interpolation.time) * (interpolation.to - interpolation.from);
+        // console.log(result)
+        interpolation.target(result)
+
+        if (delta > interpolation.time) {
+            interpolation.state = 'done';
+            if (interpolation.next) {
+                toAdd.push(interpolation.next)
+            }
+        }
+    }
+
+    interpolations = interpolations.filter(interp => interp.state !== 'done');
+    interpolations.push(...toAdd);
+    toAdd.length = 0;
+
 
     for (const current of backgrounds) {
         ctxLayer01.drawImage(current.source, current.offsetX, current.offsetY, current.width, current.height);
