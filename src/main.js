@@ -130,15 +130,15 @@ const backgrounds = [ backgroundSprite ];
  */
 let interpolations = [
     {
-        target: (value) => { duck.position.y = ~~(value) },
+        target: (value) => { duck.position.x = ~~(value) },
         from: 0,
-        to: 100,
+        to: 200,
         state: 'not initialized',
-        time: 2,
+        time: 4,
         totalTime: 0,
         next: {
-            target: (value) => { duck.position.y = ~~(value) },
-            from: 100,
+            target: (value) => { duck.position.x = ~~(value) },
+            from: 200,
             to: 0,
             state: 'not initialized',
             time: 2,
@@ -148,27 +148,51 @@ let interpolations = [
     }
 ];
 
-function *dogAnimation(dog, timestamp) {
+/**
+ * @type {Generator<boolean, boolean, number>}
+ */
+let dogAnimationRunner;
+
+/**
+ * 
+ * @param {Entity} dog 
+ * @param {number} timestamp 
+ * @param {{ from: number, to: number}} 
+ * @param {boolean} loop
+ * @param {boolean} reversed
+ * @yields {boolean}
+ * @returns {Generator<boolean, boolean, number>}
+ */
+function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = false) {
     const initialTimestamp = timestamp;
-    const from = 0;
-    const to = 200;
     const totalTime = 2;
 
     // seta o início
     dog.position.x = ~~(from);
+    dog.position.y = NES.height * 0.6;
 
     while (true) {
         const currentTimestamp = yield;
-        
-        if (((currentTimestamp - initialTimestamp) / 1000) > totalTime) break;
+        const diffInSeconds = (currentTimestamp - initialTimestamp) / 1000;
 
-        const deltaTimePast = (currentTimestamp - initialTimestamp) / 1000;
-        const newX = from + (deltaTimePast / totalTime) * (to - from);
+        if (diffInSeconds > totalTime) {
+            if (loop) {
+                if (reversed) {
+                    yield* dogAnimation(dog, currentTimestamp, { from: to, to: from }, loop, reversed);
+                } else {
+                    yield* dogAnimation(dog, currentTimestamp, { from, to }, loop, reversed);
+                }
+            } else {
+                break;
+            }
+        }
+
+        const newX = from + (diffInSeconds / totalTime) * (to - from);
 
         // aplicando 
         dog.position.x = ~~(newX);
     }
-    
+
     return true;
 }
 
@@ -191,6 +215,10 @@ function main(timestamp) {
         return;
     }
 
+    if (dogAnimationRunner === undefined) {
+        dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
+    }
+
     // blue background
     ctxLayer02.fillStyle = '#4da4ff';
     ctxLayer02.fillRect(0, 0, NES.width, NES.height);
@@ -202,18 +230,12 @@ function main(timestamp) {
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let iDuck = ~~((timestamp / (1000 / 6)) % 3);
-    let offsetX = ~~((timestamp / (100)) % 240);
-    let offsetY = NES.height * 0.6;
+    
 
-    // @todo João, temporário
-    dog.position.x = offsetX;
-    dog.position.y = offsetY;
 
-    duck.position.x = offsetX;
 
     for (const interpolation of interpolations)
     {
-        break; // Disabilitado
         if (interpolation.state === 'done') continue;
         if (interpolation.state === 'not initialized') {
             interpolation.target(interpolation.from);
@@ -229,6 +251,16 @@ function main(timestamp) {
             interpolation.state = 'done';
             if (interpolation.next) {
                 toAdd.push(interpolation.next)
+            }
+        }
+    }
+
+    {
+        if (dogAnimationRunner) {
+            const { value, done } = dogAnimationRunner.next(timestamp)
+    
+            if (done) {
+                dogAnimationRunner = null;
             }
         }
     }
