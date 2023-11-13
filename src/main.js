@@ -157,7 +157,7 @@ let dogAnimationRunner;
  * 
  * @param {Entity} dog 
  * @param {number} timestamp 
- * @param {{ from: number, to: number}} 
+ * @param {{ from: number, to: number}} param2
  * @param {boolean} loop
  * @param {boolean} reversed
  * @yields {boolean}
