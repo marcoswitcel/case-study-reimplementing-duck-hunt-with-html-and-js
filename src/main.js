@@ -20,7 +20,7 @@ const vec2 = (x, y) => ({ x, y });
  * @param {number} n 
  * @returns {boolean}
  */
-const is_integer = (n) => n === ~~n;
+const isInteger = (n) => n === ~~n;
 
 class Entity {
     
@@ -285,7 +285,7 @@ function main(timestamp) {
          */
         const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[index] : entity.renderable;
         
-        console.assert(is_integer(entity.position.x))
+        console.assert(isInteger(entity.position.x))
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);
     }
 
