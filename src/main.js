@@ -165,7 +165,7 @@ let dogAnimationRunner;
  */
 function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = false) {
     const initialTimestamp = timestamp;
-    const totalTime = 2;
+    const totalTime = 4;
 
     // seta o início
     dog.position.x = ~~(from);
