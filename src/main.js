@@ -218,21 +218,11 @@ function main(timestamp) {
     if (dogAnimationRunner === undefined) {
         dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
     }
-
-    // blue background
-    ctxLayer02.fillStyle = '#4da4ff';
-    ctxLayer02.fillRect(0, 0, NES.width, NES.height);
-
-    // limpa layer
-    ctxLayer01.clearRect(0, 0, NES.width, NES.height);
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
     let i = ~~((timestamp / (1000 / 6)) % 4);
     let iDuck = ~~((timestamp / (1000 / 6)) % 3);
-    
-
-
 
     for (const interpolation of interpolations)
     {
@@ -269,6 +259,14 @@ function main(timestamp) {
     interpolations.push(...toAdd);
     toAdd.length = 0;
 
+    // Renderização começa aqui
+
+    // blue background
+    ctxLayer02.fillStyle = '#4da4ff';
+    ctxLayer02.fillRect(0, 0, NES.width, NES.height);
+
+    // limpa layer
+    ctxLayer01.clearRect(0, 0, NES.width, NES.height);
 
     for (const current of backgrounds) {
         ctxLayer01.drawImage(current.source, current.offsetX, current.offsetY, current.width, current.height);
