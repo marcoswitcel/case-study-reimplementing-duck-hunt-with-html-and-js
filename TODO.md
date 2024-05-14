@@ -7,7 +7,8 @@ pintar o fundo e desenha o cão ou o pato -- ok
 
 começar a elaborar a cena
 elaborar o loader e gerenciador de animações e scripts de movimento estado e afins
-precisa configurar uma game loop
+precisa configurar uma game loop -- ok
+fazer detectar o clique nas entidades
 
 ## Questões a resolver
 

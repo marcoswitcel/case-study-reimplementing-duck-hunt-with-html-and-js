@@ -294,6 +294,14 @@ function main(timestamp) {
     requestAnimationFrame(main);
 }
 
+canvas.addEventListener('click', (event) => {
+    const boundings = canvas.getBoundingClientRect();
+    const coords = { x: event.clientX - boundings.x, y: event.clientY - boundings.y, };
+
+    console.log("coords:", coords);
+    console.log("event x y:", [ event.clientX, event.clientY ]);
+});
+
 image.addEventListener('load', () => {
     main();
 });
