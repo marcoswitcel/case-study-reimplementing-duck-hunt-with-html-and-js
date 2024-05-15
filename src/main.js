@@ -295,10 +295,13 @@ function main(timestamp) {
 }
 
 canvas.addEventListener('click', (event) => {
+    // @todo João, revisar essa conversão
+    const ratio = canvas.clientWidth / NES.width;
     const boundings = canvas.getBoundingClientRect();
-    const coords = { x: event.clientX - boundings.x, y: event.clientY - boundings.y, };
+    const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
     console.log("coords:", coords);
+    console.log("duck:", duck.position);
     console.log("event x y:", [ event.clientX, event.clientY ]);
 });
 
