@@ -101,6 +101,10 @@ const duckImage = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 // @todo João, fazer uma versão com fundo transparente no GIMP
 duckImage.src = '/public/assets/NES - Duck Hunt - Ducks - transparent.png';
+const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
+// @todo João, ajustar o sistema de tempo para poder passar 2 frames abaixo, ao invés de 3, está
+// fixo um módulo de 3 e gera problemas no código de renderização
+const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
 
 const duck = new Entity(
     'duck',
@@ -209,11 +213,48 @@ const entities = [];
 entities.push(dog);
 entities.push(duck);
 
+// @todo João, temporário, pensar melhor em como apresentar os dados do mouse para o programa principal,
+// talvez um buffer de eventos? (muito complexo para o que eu preciso, eu desduplicaria mouseMove?), talvez
+// apenas uma estrutura com mousePos, e mouseDown, e isRepeat (pra saber se é o primeiro mouse down) e preciso
+// saber quando rolou o mouse up?
+const mouseContext = {
+    lastClicked: null
+}
+
 function main(timestamp) {
     if (!timestamp) {
         requestAnimationFrame(main);
         return;
     }
+
+    // lidando com input
+    inputContext: { // @todo João, trabalho em progesso
+        const coord = mouseContext.lastClicked
+        
+        if (coord) {
+            for (const entity of entities) {
+                if (entity.type == 'duck') {
+                    const dx = (entity.position.x + entity.renderable.width / 2) - coord.x;
+                    const dy = (entity.position.y + entity.renderable.height / 2) - coord.y;
+
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    
+                    // @note por hora os patos são figuras quadradas, porém eventualmente deveria
+                    // permitir configurar por entidade o raio de colisão 
+                    if (distance < entity.renderable.width / 2) {
+                        // @todo João, modelar um sistema de estado para as entidades
+                        entity.renderable = duckHitSprite;
+                        // @todo João, temporário
+                        setTimeout(() => {
+                            entity.renderable = duckFallingSprite;
+                        }, 1000);
+                    }
+                }
+            }
+        }
+    }
+
+    mouseContext.lastClicked = null;
 
     if (dogAnimationRunner === undefined) {
         dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
@@ -298,11 +339,10 @@ canvas.addEventListener('click', (event) => {
     // @todo João, revisar essa conversão
     const ratio = canvas.clientWidth / NES.width;
     const boundings = canvas.getBoundingClientRect();
+    // posição menos offset do canvas e reescalado para compensar o escalonamento atual do canvas
     const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
-    console.log("coords:", coords);
-    console.log("duck:", duck.position);
-    console.log("event x y:", [ event.clientX, event.clientY ]);
+    mouseContext.lastClicked = coords;
 });
 
 image.addEventListener('load', () => {
