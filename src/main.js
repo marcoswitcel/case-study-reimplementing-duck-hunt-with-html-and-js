@@ -102,8 +102,6 @@ const duckImage = new Image;
 // @todo João, fazer uma versão com fundo transparente no GIMP
 duckImage.src = '/public/assets/NES - Duck Hunt - Ducks - transparent.png';
 const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
-// @todo João, ajustar o sistema de tempo para poder passar 2 frames abaixo, ao invés de 3, está
-// fixo um módulo de 3 e gera problemas no código de renderização
 const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
 
 const duck = new Entity(
@@ -221,8 +219,13 @@ const mouseContext = {
     lastClicked: null
 }
 
-function main(timestamp) {
-    if (!timestamp) {
+let lastTimestamp = 0;
+
+function main(timestamp = 0) {
+    const deltaTime = lastTimestamp - timestamp;
+    lastTimestamp = timestamp;
+
+    if (!timestamp || !lastTimestamp) {
         requestAnimationFrame(main);
         return;
     }
@@ -262,9 +265,7 @@ function main(timestamp) {
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
-    let i = ~~((timestamp / (1000 / 6)) % 4);
-    let iDuck = ~~((timestamp / (1000 / 6)) % 3);
-
+    
     for (const interpolation of interpolations)
     {
         if (interpolation.state === 'done') continue;
@@ -318,11 +319,10 @@ function main(timestamp) {
         
         const ctx = entity.layer === 1 ? ctxLayer01 : ctxLayer02;
 
-        const index = (entity.type === 'duck') ? iDuck : i;
         /**
          * @type {Sprite}
          */
-        const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.frames[index] : entity.renderable;
+        const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.getFrameFor(timestamp) : entity.renderable;
         
         console.assert(isInteger(entity.position.x))
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);

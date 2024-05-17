@@ -84,6 +84,19 @@ export class AnimatedSprite {
         this.frames = frames;
         this.lengthTime = lengthTime; 
     }
+
+    /**
+     * 
+     * @param {number} timestamp 
+     * @returns {Sprite}
+     */
+    getFrameFor(timestamp) {
+        // @todo João, repensar como vou armazenar o estado de cada animação, mas por hora
+        // fica assim.
+        const index = ~~((timestamp / (1000 / 6)) % this.frames.length);
+
+        return this.frames[index];
+    }
 }
 
 /**
