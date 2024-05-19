@@ -149,11 +149,35 @@ let interpolations = [
         }
     }
 ];
+interpolations.length = 0;
 
 /**
  * @type {Generator<boolean, boolean, number>}
  */
 let dogAnimationRunner;
+
+class EntityBehaviorManager {
+
+    static behaviors = [];
+
+    static register(behavior) {
+        this.behaviors.push(behavior);
+    }
+
+    static runNextTick(timestamp) {
+        const notCompleted = []; 
+        for (const behaviorRunner of this.behaviors)
+        {
+            const { value, done } = behaviorRunner.next(timestamp)
+    
+            if (!done) {
+                notCompleted.push(behaviorRunner);
+            }
+        }
+
+        this.behaviors = notCompleted;
+    }
+}
 
 /**
  * 
@@ -197,6 +221,45 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
 
     return true;
 }
+
+function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed = false) {
+    const initialTimestamp = timestamp;
+    const totalTime = 4;
+
+    // seta o início
+    entity.position.x = ~~(from.x);
+    entity.position.y = ~~(from.y);
+
+    while (true) {
+        const currentTimestamp = yield;
+        const diffInSeconds = (currentTimestamp - initialTimestamp) / 1000;
+
+        if (diffInSeconds > totalTime) {
+            if (loop) {
+                if (reversed) {
+                    yield* moveBehavior(entity, currentTimestamp, { from: to, to: from }, loop, reversed);
+                } else {
+                    yield* moveBehavior(entity, currentTimestamp, { from, to }, loop, reversed);
+                }
+            } else {
+                break;
+            }
+        }
+
+        const timePass = (diffInSeconds / totalTime);
+        const newPosition = {
+            x: from.x + timePass * (to.x - from.x),
+            y: from.y + timePass * (to.y - from.y),
+        };
+
+        // aplicando 
+        entity.position.x = ~~(newPosition.x);
+        entity.position.y = ~~(newPosition.y);
+    }
+
+    return true;
+}
+
 
 /**
  * @type {Interpolation[]}
@@ -261,6 +324,8 @@ function main(timestamp = 0) {
 
     if (dogAnimationRunner === undefined) {
         dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
+        EntityBehaviorManager.register(dogAnimationRunner)
+        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: {x: 0,y: 50,}, to: {x: 200,y: 50,}}, true, true))
     }
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
@@ -287,15 +352,7 @@ function main(timestamp = 0) {
         }
     }
 
-    {
-        if (dogAnimationRunner) {
-            const { value, done } = dogAnimationRunner.next(timestamp)
-    
-            if (done) {
-                dogAnimationRunner = null;
-            }
-        }
-    }
+    EntityBehaviorManager.runNextTick(timestamp);
 
     interpolations = interpolations.filter(interp => interp.state !== 'done');
     interpolations.push(...toAdd);
