@@ -83,12 +83,12 @@ const ctxLayer02 = layer02.getContext('2d');
 const image = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
-image.src = '/public/assets/NES - Duck Hunt - The Dog - transparent.png';
+image.src = './assets/NES - Duck Hunt - The Dog - transparent.png';
 
 const background = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
-background.src = '/public/assets/NES - Duck Hunt - Backgrounds - transparent.png';
+background.src = './assets/NES - Duck Hunt - Backgrounds - transparent.png';
 
 const dog = new Entity(
     'dog',
@@ -100,7 +100,7 @@ const duckImage = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
 // @todo João, fazer uma versão com fundo transparente no GIMP
-duckImage.src = '/public/assets/NES - Duck Hunt - Ducks - transparent.png';
+duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
 const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
 const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
 
