@@ -89,11 +89,12 @@ const background = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
 background.src = './assets/NES - Duck Hunt - Backgrounds - transparent.png';
+const dogWalkingSprite = new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1);
 
 const dog = new Entity(
     'dog',
     vec2(~~(NES.width * 0.1), ~~(NES.height * 0.6)),
-    new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1)
+    dogWalkingSprite
 );
 
 const duckImage = new Image;
@@ -103,11 +104,12 @@ const duckImage = new Image;
 duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
 const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
 const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
+const duckFlyingSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1);
 
 const duck = new Entity(
     'duck',
     vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
-    new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1),
+    duckFlyingSprite,
     2
 );
 
