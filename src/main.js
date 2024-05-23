@@ -230,17 +230,17 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
 // @todo João, criar um compositor de 'behaviors'
 
 /**
- * @todo João, evoluir a configurabilidade desse componente para permitir passar o tempo total em segundos (ou outra unidade de medida)
+ * 
  * @param {*} entity 
  * @param {*} timestamp 
  * @param {*} param2 
  * @param {*} loop 
  * @param {*} reversed 
+ * @param {*} totalTime 
  * @returns 
  */
-function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed = false) {
+function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed = false, totalTime) {
     const initialTimestamp = timestamp;
-    const totalTime = 4;
 
     // seta o início
     entity.position.x = ~~(from.x);
@@ -253,9 +253,9 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
         if (diffInSeconds > totalTime) {
             if (loop) {
                 if (reversed) {
-                    yield* moveBehavior(entity, currentTimestamp, { from: to, to: from }, loop, reversed);
+                    yield* moveBehavior(entity, currentTimestamp, { from: to, to: from }, loop, reversed, totalTime);
                 } else {
-                    yield* moveBehavior(entity, currentTimestamp, { from, to }, loop, reversed);
+                    yield* moveBehavior(entity, currentTimestamp, { from, to }, loop, reversed, totalTime);
                 }
             } else {
                 break;
@@ -341,7 +341,7 @@ function main(timestamp = 0) {
     if (dogAnimationRunner === undefined) {
         dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
         EntityBehaviorManager.register(dogAnimationRunner)
-        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: {x: 0,y: 50,}, to: {x: 200,y: 50,}}, true, true))
+        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: {x: 0,y: 50,}, to: {x: 200,y: 50,}}, true, true, 4))
     }
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
