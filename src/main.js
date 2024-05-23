@@ -90,6 +90,9 @@ const background = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 background.src = './assets/NES - Duck Hunt - Backgrounds - transparent.png';
 const dogWalkingSprite = new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1);
+const dogSmellingSprite = new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 69, 56, 44, 2, 2), 1);
+const dogFoundSprite = new Sprite(image, 0, 120, 56, 50);
+const dogJumpSprite = new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1);
 
 const dog = new Entity(
     'dog',
