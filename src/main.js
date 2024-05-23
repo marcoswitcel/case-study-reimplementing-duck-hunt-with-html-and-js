@@ -227,6 +227,17 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
     return true;
 }
 
+// @todo João, criar um compositor de 'behaviors'
+
+/**
+ * @todo João, evoluir a configurabilidade desse componente para permitir passar o tempo total em segundos (ou outra unidade de medida)
+ * @param {*} entity 
+ * @param {*} timestamp 
+ * @param {*} param2 
+ * @param {*} loop 
+ * @param {*} reversed 
+ * @returns 
+ */
 function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed = false) {
     const initialTimestamp = timestamp;
     const totalTime = 4;
