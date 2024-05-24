@@ -229,7 +229,26 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
 
 // @todo João, criar um compositor de 'behaviors'
 
+function *composeBehaviors(entity, timestamp, behaviorsAndParams) {
+    const initialTimestamp = timestamp;
+    // @todo João, continuar aqui <<<<<<<<<<<<<<<<<<<<<<<<<<<<,
+    for (const [ behavior, params ] of behaviorsAndParams) {
+        let currentTimestamp = yield;
+        const instance = behavior(entity, currentTimestamp, ...params);
+
+        let isDone = false;
+        do {
+            currentTimestamp = yield;
+            const { value, done } = instance.next(currentTimestamp);
+            isDone = done;
+        } while (!isDone)
+    }
+}
+
 /**
+ * 
+ * @note Imagino que loop e reversed poderiam ser 'behaviors' separadamente, pois varios comportamentos podem e irão
+ * ser reversíveis.
  * 
  * @param {*} entity 
  * @param {*} timestamp 
@@ -339,9 +358,13 @@ function main(timestamp = 0) {
     mouseContext.lastClicked = null;
 
     if (dogAnimationRunner === undefined) {
-        dogAnimationRunner = dogAnimation(dog, timestamp, { from: 0, to: 200 }, true, true)
-        EntityBehaviorManager.register(dogAnimationRunner)
-        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: {x: 0,y: 50,}, to: {x: 200,y: 50,}}, true, true, 4))
+        dogAnimationRunner = moveBehavior(dog, timestamp, { from: vec2(-60, NES.height * 0.6), to: vec2(90, NES.height * 0.6) }, false, false, 4)
+        EntityBehaviorManager.register(dogAnimationRunner);
+        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(0, 50), to: vec2(200, 50) }, true, true, 4));
+        // EntityBehaviorManager.register(composeBehaviors({ position: { x: 0, y: 0}}, timestamp, [
+        //     [moveBehavior, [{ from: vec2(0, 100), to: vec2(100, 200) }, false, false, 4]],
+        //     [moveBehavior, [{ from: vec2(100, 200), to: vec2(200, 400) }, false, false, 4]],
+        // ]));
     }
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
