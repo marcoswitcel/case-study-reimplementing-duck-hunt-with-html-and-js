@@ -210,8 +210,10 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
             if (loop) {
                 if (reversed) {
                     yield* dogAnimation(dog, currentTimestamp, { from: to, to: from }, loop, reversed);
+                    return;
                 } else {
                     yield* dogAnimation(dog, currentTimestamp, { from, to }, loop, reversed);
+                    return;
                 }
             } else {
                 break;
@@ -290,12 +292,15 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
             if (loop) {
                 if (reversed) {
                     yield* moveBehavior(entity, currentTimestamp, { from: to, to: from }, loop, reversed, totalTime);
+                    return;
                 } else {
                     yield* moveBehavior(entity, currentTimestamp, { from, to }, loop, reversed, totalTime);
+                    return;
                 }
             } else {
                 if (reversed) {
                     yield* moveBehavior(entity, currentTimestamp, { from: to, to: from }, loop, false, totalTime);
+                    return;
                 } else {
                     break;
                 }
