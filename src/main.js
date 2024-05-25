@@ -230,7 +230,6 @@ function *dogAnimation(dog, timestamp, { from, to }, loop = false, reversed = fa
 }
 
 /**
- * @note João, revisar o bug na animação final
  * @param {*} entity 
  * @param {*} timestamp 
  * @param {*} behaviorsAndParams 
@@ -262,6 +261,10 @@ function *changeSprite(entity, timestamp, sprite, totalTime) {
             break;
         }
     }
+}
+
+function *runAction(object, timestamp, callback) {
+    callback(object);
 }
 
 /**
@@ -388,7 +391,9 @@ function main(timestamp = 0) {
             [ changeSprite, [ dogSmellingSprite, 2 ]],
             [ changeSprite, [ dogFoundSprite, 1 ]],
             [ changeSprite, [ dogJumpSprite, 0 ]],
-            [ moveBehavior, [ { from: vec2(90, NES.height * 0.6), to: vec2(90, NES.height * 0.5) }, false, true, 1 ]],
+            [ moveBehavior, [ { from: vec2(90, NES.height * 0.6), to: vec2(90, NES.height * 0.5) }, false, false, 1 ]],
+            [ runAction, [ (dog) => { dog.layer = 2; } ]],
+            [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
         ]));
         EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(0, 50), to: vec2(200, 50) }, true, true, 4));
     }
