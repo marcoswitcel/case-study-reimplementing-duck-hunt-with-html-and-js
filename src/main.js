@@ -45,22 +45,30 @@ class Entity {
     layer;
 
     /**
+     * @type {boolean}
+     */
+    visible;
+
+    /**
      * 
      * @param {Vector2} position 
      * @param {'dog' | 'duck'} type 
      * @param {Sprite | AnimatedSprite | null} renderable
      * @param {1 | 2} layer
+     * @param {boolean} visible
      */
     constructor(
         type,
         position,
         renderable,
         layer = 1,
+        visible = true,
     ) {
         this.type = type;
         this.position = position;
         this.renderable = renderable;
         this.layer = layer;
+        this.visible = visible;
     }
 }
 
@@ -97,7 +105,9 @@ const dogJumpSprite = new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185
 const dog = new Entity(
     'dog',
     vec2(~~(NES.width * 0.1), ~~(NES.height * 0.6)),
-    dogWalkingSprite
+    dogWalkingSprite,
+    1,
+    false,
 );
 
 const duckImage = new Image;
@@ -183,6 +193,20 @@ class EntityBehaviorManager {
         this.behaviors = notCompleted;
     }
 }
+
+/**
+ * Função criada para auxiliar na depuração pelo console do navegador
+ * @param {*} object 
+ * @param {*} name 
+ */
+function registerAsGlobal(object, name = null) {
+    const bindingName = name === null ? object.name : name; 
+
+    console.log(`Making global: ${bindingName}`);
+    window[bindingName] = object;
+}
+
+// registerAsGlobal(EntityBehaviorManager);
 
 /**
  * 
@@ -387,6 +411,7 @@ function main(timestamp = 0) {
     if (!behaviorManagerInitted) {
         behaviorManagerInitted = true;
         EntityBehaviorManager.register(composeBehaviors(dog, timestamp, [
+            [ runAction, [ (dog) => { dog.position = vec2(-60, ~~(NES.height * 0.6)); dog.visible = true; } ]],
             [ moveBehavior, [ { from: vec2(-60, NES.height * 0.6), to: vec2(90, NES.height * 0.6) }, false, false, 4 ]],
             [ changeSprite, [ dogSmellingSprite, 2 ]],
             [ changeSprite, [ dogFoundSprite, 1 ]],
@@ -394,6 +419,7 @@ function main(timestamp = 0) {
             [ moveBehavior, [ { from: vec2(90, NES.height * 0.6), to: vec2(90, NES.height * 0.5) }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.layer = 2; } ]],
             [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
+            [ runAction, [ (dog) => { dog.visible = false; } ]],
         ]));
         EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(0, 50), to: vec2(200, 50) }, true, true, 4));
     }
@@ -442,7 +468,7 @@ function main(timestamp = 0) {
     }
 
     for (const entity of entities) {
-        if (!entity.renderable) continue;
+        if (!entity.renderable || !entity.visible) continue;
         
         const ctx = entity.layer === 1 ? ctxLayer01 : ctxLayer02;
 
