@@ -131,42 +131,6 @@ const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
 const backgrounds = [ backgroundSprite ];
 
 /**
- * @typedef {{
- *   target: object,
- *   from: number,
- *   state: 'done' | 'started' | 'not initialized',
- *   to: number,
- *   totalTime: number,
- *   time: number,
- *   next: Interpolation | null
- * }} Interpolation
- */
-
-/**
- * @type {Interpolation[]}
- */
-let interpolations = [
-    {
-        target: (value) => { duck.position.x = ~~(value) },
-        from: 0,
-        to: 200,
-        state: 'not initialized',
-        time: 4,
-        totalTime: 0,
-        next: {
-            target: (value) => { duck.position.x = ~~(value) },
-            from: 200,
-            to: 0,
-            state: 'not initialized',
-            time: 2,
-            totalTime: 0,
-            next: null
-        }
-    }
-];
-interpolations.length = 0;
-
-/**
  * @type {boolean}
  */
 let behaviorManagerInitted = false;
@@ -346,12 +310,6 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
     }
 }
 
-
-/**
- * @type {Interpolation[]}
- */
-const toAdd = [];
-
 /**
  * @type {Entity[]}
  */
@@ -426,33 +384,8 @@ function main(timestamp = 0) {
     
     // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
-    
-    for (const interpolation of interpolations)
-    {
-        if (interpolation.state === 'done') continue;
-        if (interpolation.state === 'not initialized') {
-            interpolation.target(interpolation.from);
-            interpolation.state = 'started';
-            interpolation.totalTime = timestamp
-        }
-        const delta = (timestamp - interpolation.totalTime) / 1000;
-        const result = interpolation.from + (delta / interpolation.time) * (interpolation.to - interpolation.from);
-        // console.log(result)
-        interpolation.target(result)
-
-        if (delta > interpolation.time) {
-            interpolation.state = 'done';
-            if (interpolation.next) {
-                toAdd.push(interpolation.next)
-            }
-        }
-    }
 
     EntityBehaviorManager.runNextTick(timestamp);
-
-    interpolations = interpolations.filter(interp => interp.state !== 'done');
-    interpolations.push(...toAdd);
-    toAdd.length = 0;
 
     // Renderização começa aqui
 
