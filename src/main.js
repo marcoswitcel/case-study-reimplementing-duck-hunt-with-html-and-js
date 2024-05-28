@@ -379,10 +379,9 @@ function main(timestamp = 0) {
             [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
         ]));
-        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(0, 50), to: vec2(200, 50) }, true, true, 4));
+        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(-20, 50), to: vec2(250, 50) }, true, false, 4));
     }
     
-    // @todo João, implementar um forma organizada e eficiente de gerenciar animações/sprites animados. (ok?)
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
 
     EntityBehaviorManager.runNextTick(timestamp);
