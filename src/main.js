@@ -311,6 +311,47 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
 }
 
 /**
+ * @todo João, adicionar lógica de movimento do pato e troca para animação de queda
+ * @param {*} entity 
+ * @param {*} timestamp 
+ * @param {*} param2 
+ * @param {*} loop 
+ * @param {*} totalTime 
+ * @returns 
+ */
+function *duckBehavior(entity, timestamp, { from, to }, loop = false, totalTime) {
+    const initialTimestamp = timestamp;
+
+    // seta o início
+    entity.position.x = ~~(from.x);
+    entity.position.y = ~~(from.y);
+
+    while (true) {
+        const currentTimestamp = yield;
+        const diffInSeconds = (currentTimestamp - initialTimestamp) / 1000;
+
+        if (diffInSeconds > totalTime) {
+            if (loop) {
+                yield* duckBehavior(entity, currentTimestamp, { from, to }, loop, totalTime);
+                return;
+            } else {
+                break;
+            }
+        }
+
+        const timePass = (diffInSeconds / totalTime);
+        const newPosition = {
+            x: from.x + timePass * (to.x - from.x),
+            y: from.y + timePass * (to.y - from.y),
+        };
+
+        // aplicando 
+        entity.position.x = ~~(newPosition.x);
+        entity.position.y = ~~(newPosition.y);
+    }
+}
+
+/**
  * @type {Entity[]}
  */
 const entities = [];
@@ -379,7 +420,7 @@ function main(timestamp = 0) {
             [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
         ]));
-        EntityBehaviorManager.register(moveBehavior(duck, timestamp, { from: vec2(-20, 50), to: vec2(250, 50) }, true, false, 4));
+        EntityBehaviorManager.register(duckBehavior(duck, timestamp, { from: vec2(-20, 50), to: vec2(250, 50) }, true, 4));
     }
     
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
