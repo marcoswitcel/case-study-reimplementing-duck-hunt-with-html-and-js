@@ -313,41 +313,55 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
 /**
  * @todo João, adicionar lógica de movimento do pato e troca para animação de queda
  * @param {*} entity 
- * @param {*} timestamp 
- * @param {*} param2 
- * @param {*} loop 
- * @param {*} totalTime 
+ * @param {*} timestamp
  * @returns 
  */
-function *duckBehavior(entity, timestamp, { from, to }, loop = false, totalTime) {
+function *duckBehavior(entity, timestamp) {
     const initialTimestamp = timestamp;
+    const totalTime = 4;
 
-    // seta o início
-    entity.position.x = ~~(from.x);
-    entity.position.y = ~~(from.y);
+    /**
+     * @todo João, gerar 4 ou 5 etapas no movimento até finalmente sair da tela
+     */
+    const steps = [
+        { from: vec2(150, 50), to: vec2(160, 20), },
+        { from: vec2(100, 100), to: vec2(150, 50), },
+    ];
+    let fromToDirection;
+    outer: while (fromToDirection = steps.pop()) {
 
-    while (true) {
-        const currentTimestamp = yield;
-        const diffInSeconds = (currentTimestamp - initialTimestamp) / 1000;
+        let currentTimestamp = yield;
+        // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
+        const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
-        if (diffInSeconds > totalTime) {
-            if (loop) {
-                yield* duckBehavior(entity, currentTimestamp, { from, to }, loop, totalTime);
-                return;
-            } else {
-                break;
+        let { done } = instance.next(currentTimestamp);
+
+        while (!done) {
+            currentTimestamp = yield;
+            done  = instance.next(currentTimestamp).done;
+
+            // @todo João, até definir como sinalizar o click no pato usar o sprite como indicação
+            if (duck.renderable === duckFallingSprite) {
+                console.log("inicinado comportamento de queda");
+                break outer;
             }
         }
+    }
 
-        const timePass = (diffInSeconds / totalTime);
-        const newPosition = {
-            x: from.x + timePass * (to.x - from.x),
-            y: from.y + timePass * (to.y - from.y),
-        };
+    falling:
+    {
+        let currentTimestamp = yield;
+        const instance = moveBehavior(entity, currentTimestamp, {
+            from: vec2(entity.position.x, entity.position.y),
+            to: vec2(entity.position.x, entity.position.y + 100),
+        }, false, false, totalTime / 2);
 
-        // aplicando 
-        entity.position.x = ~~(newPosition.x);
-        entity.position.y = ~~(newPosition.y);
+        let { done } = instance.next(currentTimestamp);
+
+        while (!done) {
+            currentTimestamp = yield;
+            done  = instance.next(currentTimestamp).done;
+        }
     }
 }
 
@@ -420,7 +434,7 @@ function main(timestamp = 0) {
             [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
         ]));
-        EntityBehaviorManager.register(duckBehavior(duck, timestamp, { from: vec2(-20, 50), to: vec2(250, 50) }, true, 4));
+        EntityBehaviorManager.register(duckBehavior(duck, timestamp));
     }
     
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
