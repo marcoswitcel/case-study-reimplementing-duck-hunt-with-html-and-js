@@ -1,5 +1,8 @@
 import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
 import { createCanvas } from './utils.js';
+import { Logger } from './logger.js'
+
+const logger = new Logger('main');
 
 /**
  * @typedef {{ x: number, y: number }} Vector2
