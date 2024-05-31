@@ -22,6 +22,9 @@ const vec2 = (x, y) => ({ x, y });
  */
 const isInteger = (n) => n === ~~n;
 
+const EntityExtensions = {
+    hitted: Symbol.for('Entity.hitted')
+}
 class Entity {
     
     /**
@@ -337,9 +340,10 @@ function *duckBehavior(entity, timestamp) {
         { from: vec2(100, 100), to: vec2(150, 50), },
     ];
     let fromToDirection;
+    let currentTimestamp;
     outer: while (fromToDirection = steps.pop()) {
 
-        let currentTimestamp = yield;
+        currentTimestamp = yield;
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
@@ -350,7 +354,8 @@ function *duckBehavior(entity, timestamp) {
             done  = instance.next(currentTimestamp).done;
 
             // @todo João, até definir como sinalizar o click no pato usar o sprite como indicação
-            if (duck.renderable === duckFallingSprite) {
+
+            if (duck[EntityExtensions.hitted]) {
                 console.log("inicinado comportamento de queda");
                 break outer;
             }
@@ -359,19 +364,19 @@ function *duckBehavior(entity, timestamp) {
 
     falling:
     {
-        let currentTimestamp = yield;
-        const instance = moveBehavior(entity, currentTimestamp, {
+        currentTimestamp = yield;
+        yield *changeSprite(duck, currentTimestamp, duckHitSprite, 0.500);
+
+        duck.renderable = duckFallingSprite;
+
+        currentTimestamp = yield;
+        yield *moveBehavior(entity, currentTimestamp, {
             from: vec2(entity.position.x, entity.position.y),
             to: vec2(entity.position.x, entity.position.y + 100),
         }, false, false, totalTime / 2);
-
-        let { done } = instance.next(currentTimestamp);
-
-        while (!done) {
-            currentTimestamp = yield;
-            done  = instance.next(currentTimestamp).done;
-        }
     }
+
+    duck.removed = true;
 }
 
 /**
@@ -416,12 +421,7 @@ function main(timestamp = 0) {
                     // @note por hora os patos são figuras quadradas, porém eventualmente deveria
                     // permitir configurar por entidade o raio de colisão 
                     if (distance < entity.renderable.width / 2) {
-                        // @todo João, modelar um sistema de estado para as entidades
-                        entity.renderable = duckHitSprite;
-                        // @todo João, temporário
-                        setTimeout(() => {
-                            entity.renderable = duckFallingSprite;
-                        }, 1000);
+                        duck[EntityExtensions.hitted] = true;
                     }
                 }
             }
@@ -475,6 +475,14 @@ function main(timestamp = 0) {
         
         console.assert(isInteger(entity.position.x))
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);
+    }
+
+    // removendo entidades deletadas
+    if (entities.some(entity => entity.removed))
+    {
+        // @note filtrando no lugar
+        // @url https://stackoverflow.com/questions/37318808/what-is-the-in-place-alternative-to-array-prototype-filter
+        entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
     }
 
     // Compoem imagem
