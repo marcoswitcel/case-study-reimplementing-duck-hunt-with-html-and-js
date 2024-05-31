@@ -50,6 +50,14 @@ class Entity {
     visible;
 
     /**
+     * Campo que sinaliza se a entidade foi removida da simulação, ao final do frame ela deve
+     * ser removida da lista de entidades, porém ao longo do frame alguma rotina ainda pode interagir
+     * com ela caso necessário.
+     * @type {boolean}
+     */
+    removed;
+
+    /**
      * 
      * @param {Vector2} position 
      * @param {'dog' | 'duck'} type 
@@ -69,6 +77,7 @@ class Entity {
         this.renderable = renderable;
         this.layer = layer;
         this.visible = visible;
+        this.removed = false;
     }
 }
 
