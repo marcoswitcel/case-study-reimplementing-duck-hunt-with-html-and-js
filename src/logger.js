@@ -26,7 +26,9 @@ export class LoggerManager {
 
         if (value) {
             for (const agent of value.split(',')) {
-                this.agents.set(agent, true);
+                if (agent.trim()) {
+                    this.agents.set(agent, true);
+                }
             }
         }
     }

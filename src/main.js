@@ -4,7 +4,10 @@ import { Logger, LoggerManager } from './logger.js'
 
 LoggerManager.initFromQueryString('loggerFilter');
 
-const logger = new Logger('main');
+const mainLogger = new Logger('main');
+const inputLogger = new Logger('input');
+const behaviorLogger = new Logger('behavior');
+
 
 /**
  * @typedef {{ x: number, y: number }} Vector2
@@ -136,12 +139,16 @@ const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
 const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
 const duckFlyingSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1);
 
-const duck = new Entity(
-    'duck',
-    vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
-    duckFlyingSprite,
-    2
-);
+function makeDuck() {
+    return new Entity(
+        'duck',
+        vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
+        duckFlyingSprite,
+        2
+    );
+}
+
+const duck = makeDuck();
 
 const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
 
@@ -166,7 +173,9 @@ class EntityBehaviorManager {
         {
             const { value, done } = behaviorRunner.next(timestamp)
     
-            if (!done) {
+            if (done) {
+                behaviorLogger.log('finalizando um comportamento');
+            } else {
                 notCompleted.push(behaviorRunner);
             }
         }
@@ -359,10 +368,8 @@ function *duckBehavior(entity, timestamp) {
             currentTimestamp = yield;
             done  = instance.next(currentTimestamp).done;
 
-            // @todo João, até definir como sinalizar o click no pato usar o sprite como indicação
-
-            if (duck[EntityExtensions.hitted]) {
-                logger.log("inicinado comportamento de queda");
+            if (entity[EntityExtensions.hitted]) {
+                mainLogger.log("inicinado comportamento de queda");
                 isFalling = true;
                 break outer;
             }
@@ -371,9 +378,9 @@ function *duckBehavior(entity, timestamp) {
 
     if (isFalling) {
         currentTimestamp = yield;
-        yield *changeSprite(duck, currentTimestamp, duckHitSprite, 0.500);
+        yield *changeSprite(entity, currentTimestamp, duckHitSprite, 0.500);
 
-        duck.renderable = duckFallingSprite;
+        entity.renderable = duckFallingSprite;
 
         currentTimestamp = yield;
         yield *moveBehavior(entity, currentTimestamp, {
@@ -382,7 +389,7 @@ function *duckBehavior(entity, timestamp) {
         }, false, false, totalTime / 2);
     }
 
-    duck.removed = true;
+    entity.removed = true;
 }
 
 /**
@@ -430,7 +437,7 @@ function main(timestamp = 0) {
                     // @note por hora os patos são figuras quadradas, porém eventualmente deveria
                     // permitir configurar por entidade o raio de colisão 
                     if (distance < entity.renderable.width / 2) {
-                        duck[EntityExtensions.hitted] = true;
+                        entity[EntityExtensions.hitted] = true;
                     }
                 }
             }
@@ -489,10 +496,15 @@ function main(timestamp = 0) {
     // removendo entidades deletadas
     if (entities.some(entity => entity.removed))
     {
-        logger.log('removendo entidade(s)...');
+        mainLogger.log('removendo entidade(s)...');
         // @note filtrando no lugar
         // @url https://stackoverflow.com/questions/37318808/what-is-the-in-place-alternative-to-array-prototype-filter
         entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
+
+        // @todo João, temporário pra testar
+        // const newDuck = makeDuck();
+        // entities.push(newDuck);
+        // EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
     }
 
     // Compoem imagem
@@ -510,10 +522,10 @@ canvas.addEventListener('click', (event) => {
     const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
     mouseContext.lastClicked = coords;
-    logger.log(JSON.stringify(coords));
+    inputLogger.log(JSON.stringify(coords));
 });
 
 image.addEventListener('load', () => {
-    logger.log('iniciando função main');
+    mainLogger.log('iniciando função main');
     main();
 });
