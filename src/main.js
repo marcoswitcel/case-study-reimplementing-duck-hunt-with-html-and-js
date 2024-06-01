@@ -344,6 +344,7 @@ function *duckBehavior(entity, timestamp) {
     ];
     let fromToDirection;
     let currentTimestamp;
+    let isFalling = false;
     outer: while (fromToDirection = steps.pop()) {
 
         currentTimestamp = yield;
@@ -360,13 +361,13 @@ function *duckBehavior(entity, timestamp) {
 
             if (duck[EntityExtensions.hitted]) {
                 console.log("inicinado comportamento de queda");
+                isFalling = true;
                 break outer;
             }
         }
     }
 
-    falling:
-    {
+    if (isFalling) {
         currentTimestamp = yield;
         yield *changeSprite(duck, currentTimestamp, duckHitSprite, 0.500);
 
@@ -386,6 +387,8 @@ function *duckBehavior(entity, timestamp) {
  * @type {Entity[]}
  */
 const entities = [];
+
+registerAsGlobal(entities, 'entities');
 
 entities.push(dog);
 entities.push(duck);
