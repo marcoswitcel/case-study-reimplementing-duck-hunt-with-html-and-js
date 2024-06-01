@@ -3,14 +3,57 @@ const TYPE_NULL = 0;
 const TYPE_CONSOLE = 1;
 const TYPE_LOCAL_STORAGE = 1 << 1;
 
+export class LoggerManager {
+    /**
+     * @private
+     * @type {Map<string, boolean>}
+     */
+   static agents = new Map();
+   
+   /**
+    * @public
+    * @param {string} agent 
+    * @returns {boolean}
+    */
+    static isAgentOn(agent) {
+      return !!(this.agents.get(agent))
+    }
+    
+    static initFromQueryString(parameterName) {
+        const params = new URLSearchParams(window.location.search);
+
+        const value = params.get(parameterName);
+
+        if (value) {
+            for (const agent of value.split(',')) {
+                this.agents.set(agent, true);
+            }
+        }
+    }
+
+    static setAgent(agent, on) {
+        this.agents.set(agent, on);
+    }
+
+    static turnOn(agent) {
+        this.agents.set(agent, true);
+    }
+
+    static turnOff(agent) {
+        this.agents.set(agent, false);
+    }
+}
+
 export class Logger {
 
     /**
+     * @private
      * @type {number}
      */
     type;
     
     /**
+     * @readonly
      * @type {string}
      */
     agent;
@@ -30,8 +73,26 @@ export class Logger {
     log(message) {
         const finalMessage = `[${this.agent}] ${message}`;
 
+        if (!this.isOn()) return;
+
         if (this.type & TYPE_CONSOLE) {
             console.log(finalMessage)
         }
+    }
+
+    /**
+     * @private
+     * @returns {boolean}
+     */
+    isOn() {
+        return LoggerManager.isAgentOn(this.agent);
+    }
+
+    on() {
+        LoggerManager.turnOn(this.agent);
+    }
+
+    off() {
+        LoggerManager.turnOff(this.agent);
     }
 }

@@ -1,6 +1,8 @@
 import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
 import { createCanvas } from './utils.js';
-import { Logger } from './logger.js'
+import { Logger, LoggerManager } from './logger.js'
+
+LoggerManager.initFromQueryString('loggerFilter');
 
 const logger = new Logger('main');
 
@@ -360,7 +362,7 @@ function *duckBehavior(entity, timestamp) {
             // @todo João, até definir como sinalizar o click no pato usar o sprite como indicação
 
             if (duck[EntityExtensions.hitted]) {
-                console.log("inicinado comportamento de queda");
+                logger.log("inicinado comportamento de queda");
                 isFalling = true;
                 break outer;
             }
@@ -389,6 +391,7 @@ function *duckBehavior(entity, timestamp) {
 const entities = [];
 
 registerAsGlobal(entities, 'entities');
+registerAsGlobal(LoggerManager, 'LoggerManager');
 
 entities.push(dog);
 entities.push(duck);
@@ -486,6 +489,7 @@ function main(timestamp = 0) {
     // removendo entidades deletadas
     if (entities.some(entity => entity.removed))
     {
+        logger.log('removendo entidade(s)...');
         // @note filtrando no lugar
         // @url https://stackoverflow.com/questions/37318808/what-is-the-in-place-alternative-to-array-prototype-filter
         entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
@@ -506,8 +510,10 @@ canvas.addEventListener('click', (event) => {
     const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
     mouseContext.lastClicked = coords;
+    logger.log(JSON.stringify(coords));
 });
 
 image.addEventListener('load', () => {
+    logger.log('iniciando função main');
     main();
 });
