@@ -337,6 +337,27 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
     }
 }
 
+function generateDuckSteps() {
+    const startPoint = vec2(100, 155);
+    const result = [];
+    
+    // número aleatório entre 1 e 5, incluindo as duas extremidades
+    const numberOfSteps = Math.ceil(Math.random() * 5);
+
+    let lastPoint = startPoint;
+    for (let i = 0; i < numberOfSteps; i++) {
+        const newPoint = vec2(
+            100 + ((Math.random() - 0.5) * 2 * 100),
+            155 + (Math.random() *  -100)
+        );
+
+        result.push({ from: lastPoint, to: newPoint, });
+
+        lastPoint = newPoint;
+    }
+    return result.reverse();
+}
+
 /**
  * @todo João, adicionar lógica de movimento do pato e troca para animação de queda
  * @param {*} entity 
@@ -352,15 +373,13 @@ function *duckBehavior(entity, timestamp) {
      * criar uma função para definir esse movimento para cada pato. Mas no geral
      * pensei em criar uma padrão de 4 a 6 etapas semialeatório.
      */
-    const steps = [
-        { from: vec2(175, 50), to: vec2(160, 20), },
-        { from: vec2(100, 155), to: vec2(175, 50), },
-    ];
+    const steps = generateDuckSteps();
     let fromToDirection;
     let currentTimestamp;
     let isFalling = false;
     outer: while (fromToDirection = steps.pop()) {
 
+        mainLogger.logAsJson(fromToDirection)
         currentTimestamp = yield;
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
@@ -525,7 +544,7 @@ canvas.addEventListener('click', (event) => {
     const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
     mouseContext.lastClicked = coords;
-    inputLogger.log(JSON.stringify(coords));
+    inputLogger.logAsJson(coords);
 });
 
 image.addEventListener('load', () => {

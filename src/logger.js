@@ -82,6 +82,11 @@ export class Logger {
         }
     }
 
+    logAsJson(object) {
+        const message = JSON.stringify(object);
+        this.log(message);
+    }
+
     /**
      * @private
      * @returns {boolean}
