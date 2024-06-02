@@ -138,12 +138,13 @@ duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
 const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
 const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
 const duckFlyingSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1);
+const duckFlyingUpSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1);
 
 function makeDuck() {
     return new Entity(
         'duck',
         vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
-        duckFlyingSprite,
+        duckFlyingUpSprite,
         2
     );
 }
@@ -347,11 +348,13 @@ function *duckBehavior(entity, timestamp) {
     const totalTime = 4;
 
     /**
-     * @todo João, gerar 4 ou 5 etapas no movimento até finalmente sair da tela
+     * @todo João, gerar 4 ou 5 etapas no movimento até finalmente sair da tela,
+     * criar uma função para definir esse movimento para cada pato. Mas no geral
+     * pensei em criar uma padrão de 4 a 6 etapas semialeatório.
      */
     const steps = [
-        { from: vec2(150, 50), to: vec2(160, 20), },
-        { from: vec2(100, 100), to: vec2(150, 50), },
+        { from: vec2(175, 50), to: vec2(160, 20), },
+        { from: vec2(100, 155), to: vec2(175, 50), },
     ];
     let fromToDirection;
     let currentTimestamp;
@@ -502,9 +505,9 @@ function main(timestamp = 0) {
         entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
 
         // @todo João, temporário pra testar
-        // const newDuck = makeDuck();
-        // entities.push(newDuck);
-        // EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
+        const newDuck = makeDuck();
+        entities.push(newDuck);
+        EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
     }
 
     // Compoem imagem
