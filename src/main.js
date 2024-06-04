@@ -31,7 +31,8 @@ const vec2 = (x, y) => ({ x, y });
 const isInteger = (n) => n === ~~n;
 
 const EntityExtensions = {
-    hitted: Symbol.for('Entity.hitted')
+    hitted: Symbol.for('Entity.hitted'),
+    hitRadius: Symbol.for('Entity.hitRadius'),
 }
 class Entity {
     
@@ -141,12 +142,17 @@ const duckFlyingSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage,
 const duckFlyingUpSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1);
 
 function makeDuck() {
-    return new Entity(
+    const duck = new Entity(
         'duck',
         vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
         duckFlyingUpSprite,
         2
     );
+
+    // @todo João, hit radius padrão
+    duck[EntityExtensions.hitRadius] = duckFlyingSprite.width / 2;
+
+    return duck;
 }
 
 const duck = makeDuck();
@@ -458,7 +464,7 @@ function main(timestamp = 0) {
                     
                     // @note por hora os patos são figuras quadradas, porém eventualmente deveria
                     // permitir configurar por entidade o raio de colisão 
-                    if (distance < entity.renderable.width / 2) {
+                    if (distance < entity[EntityExtensions.hitRadius]) {
                         entity[EntityExtensions.hitted] = true;
                     }
                 }
@@ -513,6 +519,15 @@ function main(timestamp = 0) {
         
         console.assert(isInteger(entity.position.x))
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);
+        
+        // @todo João, terminar de ajustar posição dos sprites
+        // @todo João, terminar de implementar um controle para habilitar depuração da área clicável
+        if (false && entity.type === 'duck') {
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.arc(entity.position.x + (entity.renderable.width / 2), entity.position.y + (entity.renderable.height / 2), entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);
+            ctx.stroke();
+        }
     }
 
     // removendo entidades deletadas
