@@ -144,7 +144,7 @@ const duckFlyingUpSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImag
 function makeDuck() {
     const duck = new Entity(
         'duck',
-        vec2(~~(NES.width * 0), ~~(NES.height * 0.15)),
+        vec2(-100, -100), //  deixar fora da tela pra começar
         duckFlyingUpSprite,
         2
     );
