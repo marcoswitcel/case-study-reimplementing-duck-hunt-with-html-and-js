@@ -356,7 +356,7 @@ function generateDuckSteps() {
     for (let i = 0; i < numberOfSteps; i++) {
         const newPoint = vec2(
             100 + ((Math.random() - 0.5) * 2 * 100),
-            155 + (Math.random() *  -100)
+            155 + (Math.random() *  -125) - 30
         );
 
         result.push({ from: lastPoint, to: newPoint, });
@@ -387,7 +387,7 @@ function *duckBehavior(entity, timestamp) {
     let isFalling = false;
     outer: while (fromToDirection = steps.pop()) {
 
-        mainLogger.logAsJson(fromToDirection)
+        behaviorLogger.logAsJson(fromToDirection)
         currentTimestamp = yield;
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
