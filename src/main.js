@@ -1,5 +1,5 @@
 import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
-import { createCanvas } from './utils.js';
+import { createCanvas, getParamAsBoolean } from './utils.js';
 import { Logger, LoggerManager } from './logger.js'
 
 LoggerManager.initFromQueryString('loggerFilter');
@@ -8,6 +8,8 @@ const mainLogger = new Logger('main');
 const inputLogger = new Logger('input');
 const behaviorLogger = new Logger('behavior');
 
+
+const debugHitArea = getParamAsBoolean("debugHitArea");
 
 /**
  * @typedef {{ x: number, y: number }} Vector2
@@ -521,8 +523,7 @@ function main(timestamp = 0) {
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);
         
         // @todo João, terminar de ajustar posição dos sprites
-        // @todo João, terminar de implementar um controle para habilitar depuração da área clicável
-        if (false && entity.type === 'duck') {
+        if (debugHitArea && entity.type === 'duck') {
             ctx.beginPath();
             ctx.strokeStyle = "red";
             ctx.arc(entity.position.x + (entity.renderable.width / 2), entity.position.y + (entity.renderable.height / 2), entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);

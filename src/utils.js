@@ -1,4 +1,6 @@
 
+const params = new URLSearchParams(window.location.search);
+
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto
  * caso o parâmetro `appendTo` seja especificado
@@ -17,4 +19,12 @@ export function createCanvas(width, height, appendTo = null) {
     }
 
     return canvas;
+}
+
+/**
+ * @param {string} name nome do parâmetro
+ * @returns {boolean} Verdadeiro se o valor pode ser convertido para verdadeiro
+ */
+export function getParamAsBoolean(name) {
+    return Boolean(params.get(name));
 }
