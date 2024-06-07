@@ -346,7 +346,7 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
 }
 
 function generateDuckSteps() {
-    const startPoint = vec2(100, 155);
+    const startPoint = vec2(100, 175);
     const result = [];
     
     // número aleatório entre 1 e 5, incluindo as duas extremidades
@@ -356,7 +356,7 @@ function generateDuckSteps() {
     for (let i = 0; i < numberOfSteps; i++) {
         const newPoint = vec2(
             100 + ((Math.random() - 0.5) * 2 * 100),
-            155 + (Math.random() *  -125) - 30
+            175 + (Math.random() *  -125) - 30
         );
 
         result.push({ from: lastPoint, to: newPoint, });
@@ -459,8 +459,8 @@ function main(timestamp = 0) {
         if (coord) {
             for (const entity of entities) {
                 if (entity.type == 'duck') {
-                    const dx = (entity.position.x + entity.renderable.width / 2) - coord.x;
-                    const dy = (entity.position.y + entity.renderable.height / 2) - coord.y;
+                    const dx = entity.position.x - coord.x;
+                    const dy = entity.position.y - coord.y;
 
                     const distance = Math.sqrt(dx*dx + dy*dy);
                     
@@ -479,14 +479,14 @@ function main(timestamp = 0) {
     if (!behaviorManagerInitted) {
         behaviorManagerInitted = true;
         EntityBehaviorManager.register(composeBehaviors(dog, timestamp, [
-            [ runAction, [ (dog) => { dog.position = vec2(-60, ~~(NES.height * 0.6)); dog.visible = true; } ]],
-            [ moveBehavior, [ { from: vec2(-60, NES.height * 0.6), to: vec2(90, NES.height * 0.6) }, false, false, 4 ]],
+            [ runAction, [ (dog) => { dog.position = vec2(-60, ~~(NES.height * 0.7)); dog.visible = true; } ]],
+            [ moveBehavior, [ { from: vec2(-60, NES.height * 0.7), to: vec2(125, NES.height * 0.7) }, false, false, 4 ]],
             [ changeSprite, [ dogSmellingSprite, 2 ]],
             [ changeSprite, [ dogFoundSprite, 1 ]],
             [ changeSprite, [ dogJumpSprite, 0 ]],
-            [ moveBehavior, [ { from: vec2(90, NES.height * 0.6), to: vec2(90, NES.height * 0.5) }, false, false, 1 ]],
+            [ moveBehavior, [ { from: vec2(125, NES.height * 0.7), to: vec2(125, NES.height * 0.6) }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.layer = 2; } ]],
-            [ moveBehavior, [ { from: vec2(90, NES.height * 0.5), to: vec2(90, NES.height * 0.6), }, false, false, 1 ]],
+            [ moveBehavior, [ { from: vec2(125, NES.height * 0.6), to: vec2(125, NES.height * 0.7), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
         ]));
         EntityBehaviorManager.register(duckBehavior(duck, timestamp));
@@ -519,14 +519,16 @@ function main(timestamp = 0) {
          */
         const frame = (entity.renderable instanceof AnimatedSprite) ? entity.renderable.getFrameFor(timestamp) : entity.renderable;
         
-        console.assert(isInteger(entity.position.x))
-        ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, entity.position.x, entity.position.y, frame.width, frame.height);
+        console.assert(isInteger(entity.position.x));
+        const x = entity.position.x - ~~(entity.renderable.width / 2); // @note aredonda pra baixo em caso de número impar de pixels
+        const y = entity.position.y - ~~(entity.renderable.height / 2); // @note aredonda pra baixo em caso de número impar de pixels
+        ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, x, y, frame.width, frame.height);
         
         // @todo João, terminar de ajustar posição dos sprites
         if (debugHitArea && entity.type === 'duck') {
             ctx.beginPath();
             ctx.strokeStyle = "red";
-            ctx.arc(entity.position.x + (entity.renderable.width / 2), entity.position.y + (entity.renderable.height / 2), entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);
+            ctx.arc(entity.position.x, entity.position.y, entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);
             ctx.stroke();
         }
     }
