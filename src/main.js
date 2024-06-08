@@ -387,8 +387,8 @@ function generateDuckSteps() {
     const startPoint = vec2(100, 175);
     const result = [];
     
-    // número aleatório entre 1 e 5, incluindo as duas extremidades
-    const numberOfSteps = Math.ceil(Math.random() * 5);
+    // número aleatório entre 1 e 4, incluindo as duas extremidades
+    const numberOfSteps = Math.ceil(Math.random() * 4);
 
     let lastPoint = startPoint;
     for (let i = 0; i < numberOfSteps; i++) {
@@ -401,6 +401,10 @@ function generateDuckSteps() {
 
         lastPoint = newPoint;
     }
+
+    // voa para fora da tela na última sempre
+    result.push({ from: lastPoint, to: vec2(100 + ((Math.random() - 0.5) * 2 * 100), -30), })
+
     return result.reverse();
 }
 
@@ -576,7 +580,7 @@ function main(timestamp = 0) {
         if (debugAnimationName && entity[EntityExtensions.animationState]) {
             ctx.font = '12px monospace';
             ctx.fillStyle = 'red';
-            ctx.fillText(entity[EntityExtensions.animationState], entity.position.x, entity.position.y);
+            ctx.fillText(entity[EntityExtensions.animationState], entity.position.x + entity[EntityExtensions.hitRadius], entity.position.y);
         }
     }
 
