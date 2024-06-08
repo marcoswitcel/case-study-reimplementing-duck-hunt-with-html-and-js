@@ -10,6 +10,7 @@ const behaviorLogger = new Logger('behavior');
 
 
 const debugHitArea = getParamAsBoolean("debugHitArea");
+const debugAnimationName = getParamAsBoolean("debugAnimationName");
 
 /**
  * @typedef {{ x: number, y: number }} Vector2
@@ -445,6 +446,7 @@ function *duckBehavior(entity, timestamp) {
 
     if (isFalling) {
         currentTimestamp = yield;
+        entity[EntityExtensions.animationState] = 'hit'; // @todo João, ajustar aqui
         yield *changeSprite(entity, currentTimestamp, entity[EntityExtensions.animationMap]['hit'], 0.500);
 
         duckSetAnimation(entity, 'falling');
@@ -569,6 +571,12 @@ function main(timestamp = 0) {
             ctx.strokeStyle = "red";
             ctx.arc(entity.position.x, entity.position.y, entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);
             ctx.stroke();
+        }
+
+        if (debugAnimationName && entity[EntityExtensions.animationState]) {
+            ctx.font = '12px monospace';
+            ctx.fillStyle = 'red';
+            ctx.fillText(entity[EntityExtensions.animationState], entity.position.x, entity.position.y);
         }
     }
 
