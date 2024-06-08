@@ -35,7 +35,17 @@ const isInteger = (n) => n === ~~n;
 const EntityExtensions = {
     hitted: Symbol.for('Entity.hitted'),
     hitRadius: Symbol.for('Entity.hitRadius'),
+    animationState: Symbol.for('Entity.animationState'),
+    animationMap: Symbol.for('Entity.animationMap'),
 }
+
+function duckSetAnimation(duck, animationStateName) {
+    console.assert(duck[EntityExtensions.animationMap][animationStateName]);
+
+    duck[EntityExtensions.animationState] = animationStateName;
+    duck.renderable = duck[EntityExtensions.animationMap][animationStateName];
+}
+
 class Entity {
     
     /**
@@ -138,21 +148,42 @@ const duckImage = new Image;
 // @todo João, ajustar essa urls para não serem fixas
 // @todo João, fazer uma versão com fundo transparente no GIMP
 duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
-const duckHitSprite = new Sprite(duckImage, 220, 6, 38, 38);
-const duckFallingSprite = new Sprite(duckImage, 258, 6, 31, 38);
-const duckFlyingSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6, 38, 38, 3, 3), 1);
-const duckFlyingUpSprite = new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1);
+
+const duckSpritesVariations = [
+    {
+        hit: new Sprite(duckImage, 220, 6, 38, 38),
+        falling: new Sprite(duckImage, 258, 6, 31, 38),
+        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
+    },
+    {
+        hit: new Sprite(duckImage, 220, 44, 38, 38),
+        falling: new Sprite(duckImage, 258, 44, 31, 38),
+        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
+    },
+    { // @todo João, offset incorreto nesses dois últimos mapas
+        hit: new Sprite(duckImage, 220, 88, 38, 38),
+        falling: new Sprite(duckImage, 258, 88, 31, 38),
+        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
+    },
+]
 
 function makeDuck() {
     const duck = new Entity(
         'duck',
         vec2(-100, -100), //  deixar fora da tela pra começar
-        duckFlyingUpSprite,
+        null,
         2
     );
 
     // @todo João, hit radius padrão
-    duck[EntityExtensions.hitRadius] = duckFlyingSprite.width / 2;
+    duck[EntityExtensions.hitRadius] = 38 / 2;
+
+    const animationMap = duckSpritesVariations[Math.floor(duckSpritesVariations.length * Math.random())];
+
+    duck[EntityExtensions.animationState] = 'flying';
+    duck[EntityExtensions.animationMap] = animationMap;
+
+    duck.renderable = duck[EntityExtensions.animationMap]['flying'];
 
     return duck;
 }
@@ -193,6 +224,11 @@ class EntityBehaviorManager {
     }
 }
 
+const levelContext = {
+    lost: 0,
+    hitted: 0,
+}
+
 /**
  * Função criada para auxiliar na depuração pelo console do navegador
  * @param {*} object 
@@ -206,6 +242,7 @@ function registerAsGlobal(object, name = null) {
 }
 
 // registerAsGlobal(EntityBehaviorManager);
+registerAsGlobal(levelContext, 'levelContext');
 
 /**
  * 
@@ -287,7 +324,7 @@ function *changeSprite(entity, timestamp, sprite, totalTime) {
 }
 
 function *runAction(object, timestamp, callback) {
-    callback(object);
+    callback(object, timestamp);
 }
 
 /**
@@ -408,9 +445,9 @@ function *duckBehavior(entity, timestamp) {
 
     if (isFalling) {
         currentTimestamp = yield;
-        yield *changeSprite(entity, currentTimestamp, duckHitSprite, 0.500);
+        yield *changeSprite(entity, currentTimestamp, entity[EntityExtensions.animationMap]['hit'], 0.500);
 
-        entity.renderable = duckFallingSprite;
+        duckSetAnimation(entity, 'falling');
 
         currentTimestamp = yield;
         yield *moveBehavior(entity, currentTimestamp, {
@@ -420,6 +457,7 @@ function *duckBehavior(entity, timestamp) {
     }
 
     entity.removed = true;
+    levelContext.lost++;
 }
 
 /**
@@ -468,6 +506,7 @@ function main(timestamp = 0) {
                     // permitir configurar por entidade o raio de colisão 
                     if (distance < entity[EntityExtensions.hitRadius]) {
                         entity[EntityExtensions.hitted] = true;
+                        levelContext.hitted++;
                     }
                 }
             }
@@ -488,8 +527,8 @@ function main(timestamp = 0) {
             [ runAction, [ (dog) => { dog.layer = 2; } ]],
             [ moveBehavior, [ { from: vec2(125, NES.height * 0.6), to: vec2(125, NES.height * 0.7), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
+            [ runAction, [ (_, timestamp) => { EntityBehaviorManager.register(duckBehavior(duck, timestamp)); } ]],
         ]));
-        EntityBehaviorManager.register(duckBehavior(duck, timestamp));
     }
     
     // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
