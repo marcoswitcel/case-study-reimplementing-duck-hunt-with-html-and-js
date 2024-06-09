@@ -150,32 +150,19 @@ const duckImage = new Image;
 // @todo João, fazer uma versão com fundo transparente no GIMP
 duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
 
-const duckSpritesVariations = [
-    {
-        hit: new Sprite(duckImage, 220, 6, 38, 38),
-        falling: new Sprite(duckImage, 258, 6, 31, 38),
-        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
-        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 2, 33, 33, 3, 3), 1),
-        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
-        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 2, 33, 33, 3, 3), 1),
-    },
-    {
-        hit: new Sprite(duckImage, 220, 44, 38, 38),
-        falling: new Sprite(duckImage, 258, 44, 31, 38),
-        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
-        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 44, 38, 38, 3, 3), 1),
-        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
-        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 44, 38, 38, 3, 3), 1),
-    },
-    { // @todo João, offset incorreto nesses dois últimos mapas
-        hit: new Sprite(duckImage, 220, 88, 38, 38),
-        falling: new Sprite(duckImage, 258, 88, 31, 38),
-        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
-        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 88, 38, 38, 3, 3), 1),
-        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
-        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 88, 38, 38, 3, 3), 1),
-    },
-]
+const duckSpritesVariations = [];
+
+for (let i = 0; i < 3; i++)
+{
+    duckSpritesVariations.push({
+        hit: new Sprite(duckImage, 220, 6 + (i * 44), 38, 38),
+        falling: new Sprite(duckImage, 258, 6 + (i * 44), 31, 38),
+        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6 + (i * 44), 38, 38, 3, 3), 1),
+        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2 + (i * 44), 33, 33, 3, 3), 1),
+        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 6 + (i * 44), 38, 38, 3, 3), 1),
+        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2 + (i * 44), 33, 33, 3, 3), 1),
+    });
+}
 
 function makeDuck() {
     const duck = new Entity(
