@@ -40,11 +40,12 @@ const EntityExtensions = {
     animationMap: Symbol.for('Entity.animationMap'),
 }
 
-function duckSetAnimation(duck, animationStateName) {
-    console.assert(duck[EntityExtensions.animationMap][animationStateName]);
+function setEntityAnimation(entity, animationStateName) {
+    // @todo João adicionar mais logs aqui
+    console.assert(entity[EntityExtensions.animationMap][animationStateName]);
 
-    duck[EntityExtensions.animationState] = animationStateName;
-    duck.renderable = duck[EntityExtensions.animationMap][animationStateName];
+    entity[EntityExtensions.animationState] = animationStateName;
+    entity.renderable = entity[EntityExtensions.animationMap][animationStateName];
 }
 
 class Entity {
@@ -131,15 +132,11 @@ const background = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
 background.src = './assets/NES - Duck Hunt - Backgrounds - transparent.png';
-const dogWalkingSprite = new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1);
-const dogSmellingSprite = new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 69, 56, 44, 2, 2), 1);
-const dogFoundSprite = new Sprite(image, 0, 120, 56, 50);
-const dogJumpSprite = new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1);
 
 const dog = new Entity(
     'dog',
     vec2(~~(NES.width * 0.1), ~~(NES.height * 0.6)),
-    dogWalkingSprite,
+    null,
     1,
     false,
 );
@@ -149,9 +146,9 @@ dog[EntityExtensions.animationMap] = {
     'walking': new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1),
     'smelling': new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 69, 56, 44, 2, 2), 1),
     'found': new Sprite(image, 0, 120, 56, 50),
-    'sprite': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1),
+    'jump': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1),
 };
-dog[EntityExtensions.animationState] = 'walking';
+setEntityAnimation(dog, 'walking');
 
 const duckImage = new Image;
 
@@ -314,10 +311,10 @@ function *composeBehaviors(entity, timestamp, behaviorsAndParams) {
     }
 }
 
-function *changeSprite(entity, timestamp, sprite, totalTime) {
+function *changeSprite(entity, timestamp, animationName, totalTime) {
     const initialTimestamp = timestamp;
 
-    entity.renderable = sprite;
+    setEntityAnimation(entity, animationName);
 
     while (true) {
         const currentTimestamp = yield;
@@ -444,7 +441,7 @@ function *duckBehavior(entity, timestamp) {
             animationName += '.up';
         }
 
-        duckSetAnimation(entity, animationName);
+        setEntityAnimation(entity, animationName);
 
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
@@ -466,9 +463,9 @@ function *duckBehavior(entity, timestamp) {
     if (isFalling) {
         currentTimestamp = yield;
         entity[EntityExtensions.animationState] = 'hit'; // @todo João, ajustar aqui
-        yield *changeSprite(entity, currentTimestamp, entity[EntityExtensions.animationMap]['hit'], 0.500);
+        yield *changeSprite(entity, currentTimestamp, 'hit', 0.500);
 
-        duckSetAnimation(entity, 'falling');
+        setEntityAnimation(entity, 'falling');
 
         currentTimestamp = yield;
         yield *moveBehavior(entity, currentTimestamp, {
@@ -541,9 +538,9 @@ function main(timestamp = 0) {
         EntityBehaviorManager.register(composeBehaviors(dog, timestamp, [
             [ runAction, [ (dog) => { dog.position = vec2(-60, ~~(NES.height * 0.7)); dog.visible = true; } ]],
             [ moveBehavior, [ { from: vec2(-60, NES.height * 0.7), to: vec2(125, NES.height * 0.7) }, false, false, 4 ]],
-            [ changeSprite, [ dogSmellingSprite, 2 ]],
-            [ changeSprite, [ dogFoundSprite, 1 ]],
-            [ changeSprite, [ dogJumpSprite, 0 ]],
+            [ changeSprite, [ 'smelling', 2 ]],
+            [ changeSprite, [ 'found', 1 ]],
+            [ changeSprite, [ 'jump', 0 ]],
             [ moveBehavior, [ { from: vec2(125, NES.height * 0.7), to: vec2(125, NES.height * 0.6) }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.layer = 2; } ]],
             [ moveBehavior, [ { from: vec2(125, NES.height * 0.6), to: vec2(125, NES.height * 0.7), }, false, false, 1 ]],
@@ -592,7 +589,7 @@ function main(timestamp = 0) {
             ctx.stroke();
         }
 
-        if (debugAnimationName && entity[EntityExtensions.animationState]) {
+        if (debugAnimationName && entity[EntityExtensions.animationState] && (entity.type === 'duck' || entity.type === 'dog')) {
             ctx.font = '12px monospace';
             ctx.fillStyle = 'red';
             ctx.fillText(entity[EntityExtensions.animationState], entity.position.x + entity[EntityExtensions.hitRadius], entity.position.y);
