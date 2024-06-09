@@ -144,6 +144,15 @@ const dog = new Entity(
     false,
 );
 
+dog[EntityExtensions.hitRadius] = 20;
+dog[EntityExtensions.animationMap] = {
+    'walking': new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 13, 56, 44, 4, 4), 1),
+    'smelling': new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 69, 56, 44, 2, 2), 1),
+    'found': new Sprite(image, 0, 120, 56, 50),
+    'sprite': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1),
+};
+dog[EntityExtensions.animationState] = 'walking';
+
 const duckImage = new Image;
 
 // @todo João, ajustar essa urls para não serem fixas
@@ -576,7 +585,7 @@ function main(timestamp = 0) {
         ctx.drawImage(frame.source, frame.offsetX, frame.offsetY, frame.width, frame.height, x, y, frame.width, frame.height);
         
         // @todo João, terminar de ajustar posição dos sprites
-        if (debugHitArea && entity.type === 'duck') {
+        if (debugHitArea && (entity.type === 'duck' || entity.type === 'dog')) {
             ctx.beginPath();
             ctx.strokeStyle = "red";
             ctx.arc(entity.position.x, entity.position.y, entity[EntityExtensions.hitRadius], 0, 2 * Math.PI);
