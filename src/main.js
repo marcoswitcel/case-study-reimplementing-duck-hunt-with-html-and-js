@@ -154,17 +154,26 @@ const duckSpritesVariations = [
     {
         hit: new Sprite(duckImage, 220, 6, 38, 38),
         falling: new Sprite(duckImage, 258, 6, 31, 38),
-        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
+        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
+        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 2, 33, 33, 3, 3), 1),
+        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 6, 2, 33, 33, 3, 3), 1),
+        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 2, 33, 33, 3, 3), 1),
     },
     {
         hit: new Sprite(duckImage, 220, 44, 38, 38),
         falling: new Sprite(duckImage, 258, 44, 31, 38),
-        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
+        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
+        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 44, 38, 38, 3, 3), 1),
+        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 44, 38, 38, 3, 3), 1),
+        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 44, 38, 38, 3, 3), 1),
     },
     { // @todo João, offset incorreto nesses dois últimos mapas
         hit: new Sprite(duckImage, 220, 88, 38, 38),
         falling: new Sprite(duckImage, 258, 88, 31, 38),
-        flying: new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
+        'flying.right': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
+        'flying.right.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 88, 38, 38, 3, 3), 1),
+        'flying.left': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 106, 88, 38, 38, 3, 3), 1),
+        'flying.left.up': new AnimatedSprite(38, 38, makeFrameSequence(duckImage, 0, 88, 38, 38, 3, 3), 1),
     },
 ]
 
@@ -181,10 +190,10 @@ function makeDuck() {
 
     const animationMap = duckSpritesVariations[Math.floor(duckSpritesVariations.length * Math.random())];
 
-    duck[EntityExtensions.animationState] = 'flying';
+    duck[EntityExtensions.animationState] = 'flying.right';
     duck[EntityExtensions.animationMap] = animationMap;
 
-    duck.renderable = duck[EntityExtensions.animationMap]['flying'];
+    duck.renderable = duck[EntityExtensions.animationMap]['flying.right'];
 
     return duck;
 }
@@ -431,6 +440,16 @@ function *duckBehavior(entity, timestamp) {
 
         behaviorLogger.logAsJson(fromToDirection)
         currentTimestamp = yield;
+
+        // @todo João, falta uma animação pra voando para cima
+        let animationName = (fromToDirection.from.x < fromToDirection.to.x) ? 'flying.right' : 'flying.left';
+        
+        if (fromToDirection.from.y > fromToDirection.to.y) {
+            animationName += '.up';
+        }
+
+        duckSetAnimation(entity, animationName);
+
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
