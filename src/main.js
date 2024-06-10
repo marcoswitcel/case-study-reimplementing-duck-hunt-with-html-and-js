@@ -453,7 +453,7 @@ function *duckBehavior(entity, timestamp) {
             done  = instance.next(currentTimestamp).done;
 
             if (entity[EntityExtensions.hitted]) {
-                mainLogger.log("inicinado comportamento de queda");
+                mainLogger.log("iniciando comportamento de queda");
                 isFalling = true;
                 break outer;
             }
@@ -462,7 +462,6 @@ function *duckBehavior(entity, timestamp) {
 
     if (isFalling) {
         currentTimestamp = yield;
-        entity[EntityExtensions.animationState] = 'hit'; // @todo João, ajustar aqui
         yield *changeSprite(entity, currentTimestamp, 'hit', 0.500);
 
         setEntityAnimation(entity, 'falling');
@@ -596,6 +595,15 @@ function main(timestamp = 0) {
         }
     }
 
+    for (const entity of entities) {
+        if (entity.type === 'duck' && entity.removed) {
+            const newDuck = makeDuck();
+            entities.push(newDuck);
+            EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
+            mainLogger.log("adicionando pato...");
+        }
+    }
+
     // removendo entidades deletadas
     if (entities.some(entity => entity.removed))
     {
@@ -603,11 +611,6 @@ function main(timestamp = 0) {
         // @note filtrando no lugar
         // @url https://stackoverflow.com/questions/37318808/what-is-the-in-place-alternative-to-array-prototype-filter
         entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
-
-        // @todo João, temporário pra testar
-        const newDuck = makeDuck();
-        entities.push(newDuck);
-        EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
     }
 
     // Compoem imagem
