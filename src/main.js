@@ -41,11 +41,17 @@ const EntityExtensions = {
 }
 
 function setEntityAnimation(entity, animationStateName) {
-    // @todo João adicionar mais logs aqui
-    console.assert(entity[EntityExtensions.animationMap][animationStateName]);
+    if (animationStateName && entity[EntityExtensions.animationMap]) {
 
-    entity[EntityExtensions.animationState] = animationStateName;
-    entity.renderable = entity[EntityExtensions.animationMap][animationStateName];
+        entity[EntityExtensions.animationState] = animationStateName;
+        entity.renderable = entity[EntityExtensions.animationMap][animationStateName];
+        
+        console.assert(entity.renderable);
+        return;
+    }
+    
+    console.assert(animationStateName);
+    console.assert(entity[EntityExtensions.animationMap]);
 }
 
 class Entity {
@@ -513,7 +519,8 @@ function main(timestamp = 0) {
         
         if (coord) {
             for (const entity of entities) {
-                if (entity.type == 'duck') {
+                // @note João, criar atributo e objeto pra representar objetos 'clicáveis'
+                if (entity.type == 'duck' || entity.type == 'dog') {
                     const dx = entity.position.x - coord.x;
                     const dy = entity.position.y - coord.y;
 
@@ -595,13 +602,21 @@ function main(timestamp = 0) {
         }
     }
 
+    // várias limpezas e processos rodados após a conclusão do frame
     for (const entity of entities) {
+        
+        if (entity[EntityExtensions.hitted]) {
+            inputLogger.log("Entidade clicada no frame: " + entity.type);
+            entity[EntityExtensions.hitted] = false;
+        }
+
         if (entity.type === 'duck' && entity.removed) {
             const newDuck = makeDuck();
             entities.push(newDuck);
             EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
             mainLogger.log("adicionando pato...");
         }
+
     }
 
     // removendo entidades deletadas
