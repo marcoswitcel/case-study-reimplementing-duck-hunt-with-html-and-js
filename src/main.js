@@ -153,6 +153,7 @@ dog[EntityExtensions.animationMap] = {
     'smelling': new AnimatedSprite(56, 44, makeFrameSequence(image, 0, 69, 56, 44, 2, 2), 1),
     'found': new Sprite(image, 0, 120, 56, 50),
     'jump': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1),
+    'got1duck': new Sprite(image, 0, 256, 50, 48),
 };
 setEntityAnimation(dog, 'walking');
 
