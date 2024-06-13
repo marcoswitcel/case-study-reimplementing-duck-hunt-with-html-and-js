@@ -154,6 +154,8 @@ dog[EntityExtensions.animationMap] = {
     'found': new Sprite(image, 0, 120, 56, 50),
     'jump': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 185, 40, 44, 2, 2), 1),
     'got1duck': new Sprite(image, 0, 256, 50, 48),
+    'got2duck': new Sprite(image, 0, 256, 50, 48), // @todo João, mesma animação da got1duck
+    'got3duck': new Sprite(image, 0, 256, 50, 48), // @todo João, mesma animação da got1duck
 };
 setEntityAnimation(dog, 'walking');
 
@@ -505,6 +507,13 @@ const mouseContext = {
 
 let lastTimestamp = 0;
 
+function addFlyingDuck(timestamp) {
+    const newDuck = makeDuck();
+    entities.push(newDuck);
+    EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
+    mainLogger.log("adicionando pato...");
+}
+
 function main(timestamp = 0) {
     const deltaTime = lastTimestamp - timestamp;
     lastTimestamp = timestamp;
@@ -612,10 +621,21 @@ function main(timestamp = 0) {
         }
 
         if (entity.type === 'duck' && entity.removed) {
-            const newDuck = makeDuck();
-            entities.push(newDuck);
-            EntityBehaviorManager.register(duckBehavior(newDuck, timestamp));
-            mainLogger.log("adicionando pato...");
+            
+
+            // @todo João, ajustar para não usar o nome da animação aqui...
+            if (entity[EntityExtensions.animationState] === 'falling') {
+                EntityBehaviorManager.register(composeBehaviors(dog, timestamp, [
+                    [ runAction, [ (dog) => { dog.layer = 2; dog.position = vec2(125, ~~(NES.height * 0.7)); dog.visible = true; setEntityAnimation(dog, 'got1duck') } ]],
+                    [ moveBehavior, [ { from: vec2(125, ~~(NES.height * 0.7)), to: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.5 ]],
+                    [ changeSprite, [ 'got1duck', .5 ]],
+                    [ moveBehavior, [ { to: vec2(125, ~~(NES.height * 0.7)), from: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.75 ]],
+                    [ runAction, [ (dog) => { dog.visible = false; } ]],
+                    [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
+                ]));    
+            } else {
+                addFlyingDuck(timestamp);
+            }
         }
 
     }
