@@ -200,8 +200,6 @@ function makeDuck() {
     return duck;
 }
 
-const duck = makeDuck();
-
 const backgroundSprite = new Sprite(background, 0, 0, NES.width, NES.height);
 
 const backgrounds = [ backgroundSprite ];
@@ -443,7 +441,6 @@ function *duckBehavior(entity, timestamp) {
         behaviorLogger.logAsJson(fromToDirection)
         currentTimestamp = yield;
 
-        // @todo João, falta uma animação pra voando para cima
         let animationName = (fromToDirection.from.x < fromToDirection.to.x) ? 'flying.right' : 'flying.left';
         
         if (fromToDirection.from.y > fromToDirection.to.y) {
@@ -495,7 +492,6 @@ registerAsGlobal(entities, 'entities');
 registerAsGlobal(LoggerManager, 'LoggerManager');
 
 entities.push(dog);
-entities.push(duck);
 
 // @todo João, temporário, pensar melhor em como apresentar os dados do mouse para o programa principal,
 // talvez um buffer de eventos? (muito complexo para o que eu preciso, eu desduplicaria mouseMove?), talvez
@@ -561,7 +557,7 @@ function main(timestamp = 0) {
             [ runAction, [ (dog) => { dog.layer = 2; } ]],
             [ moveBehavior, [ { from: vec2(125, NES.height * 0.6), to: vec2(125, NES.height * 0.7), }, false, false, 1 ]],
             [ runAction, [ (dog) => { dog.visible = false; } ]],
-            [ runAction, [ (_, timestamp) => { EntityBehaviorManager.register(duckBehavior(duck, timestamp)); } ]],
+            [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
         ]));
     }
     
@@ -621,7 +617,7 @@ function main(timestamp = 0) {
         }
 
         if (entity.type === 'duck' && entity.removed) {
-            
+
 
             // @todo João, ajustar para não usar o nome da animação aqui...
             if (entity[EntityExtensions.animationState] === 'falling') {
