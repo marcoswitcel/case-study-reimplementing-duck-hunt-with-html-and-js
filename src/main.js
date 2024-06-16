@@ -72,6 +72,7 @@ dog[EntityExtensions.animationMap] = {
     'got1duck': new Sprite(image, 0, 256, 50, 48),
     'got2duck': new Sprite(image, 0, 256, 50, 48), // @todo João, mesma animação da got1duck
     'got3duck': new Sprite(image, 0, 256, 50, 48), // @todo João, mesma animação da got1duck
+    'laughing': new AnimatedSprite(40, 44, makeFrameSequence(image, 0, 1233, 50, 48, 2, 2), 1), //  @todo João, revisar coordenadas
 };
 setEntityAnimation(dog, 'walking');
 
@@ -509,7 +510,14 @@ function main(timestamp = 0) {
                     [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
                 ]));    
             } else {
-                addFlyingDuck(timestamp);
+                EntityBehaviorManager.register(composeBehaviors(dog, timestamp, [
+                    [ runAction, [ (dog) => { dog.layer = 2; dog.position = vec2(125, ~~(NES.height * 0.7)); dog.visible = true; setEntityAnimation(dog, 'got1duck') } ]],
+                    [ moveBehavior, [ { from: vec2(125, ~~(NES.height * 0.7)), to: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.5 ]],
+                    [ changeSprite, [ 'laughing', .5 ]],
+                    [ moveBehavior, [ { to: vec2(125, ~~(NES.height * 0.7)), from: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.5 ]],
+                    [ runAction, [ (dog) => { dog.visible = false; } ]],
+                    [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
+                ]));
             }
         }
 
