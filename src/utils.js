@@ -1,4 +1,8 @@
 
+/**
+ * @typedef {{ x: number, y: number }} Vector2
+ */
+
 const params = new URLSearchParams(window.location.search);
 
 /**
@@ -28,3 +32,32 @@ export function createCanvas(width, height, appendTo = null) {
 export function getParamAsBoolean(name) {
     return Boolean(params.get(name));
 }
+
+/**
+ * Função criada para auxiliar na depuração pelo console do navegador
+ * @param {*} object 
+ * @param {*} name 
+ */
+export function registerAsGlobal(object, name = null) {
+    const bindingName = name === null ? object.name : name; 
+
+    console.log(`Making global: ${bindingName}`);
+    window[bindingName] = object;
+}
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * 
+ * @returns {Vector2}
+ */
+export const vec2 = (x, y) => ({ x, y });
+
+/**
+ * @note Não funciona com número muitos grandes 2e22 por exemplo
+ * 
+ * @param {number} n 
+ * @returns {boolean}
+ */
+export const isInteger = (n) => n === ~~n;

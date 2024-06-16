@@ -1,6 +1,10 @@
 import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
-import { createCanvas, getParamAsBoolean } from './utils.js';
+import { createCanvas, getParamAsBoolean, isInteger, registerAsGlobal, vec2 } from './utils.js';
 import { Logger, LoggerManager } from './logger.js'
+
+/**
+ * @typedef {import('./utils.js').Vector2} Vector2
+ */
 
 LoggerManager.initFromQueryString('loggerFilter');
 
@@ -12,26 +16,7 @@ const behaviorLogger = new Logger('behavior');
 const debugHitArea = getParamAsBoolean("debugHitArea");
 const debugAnimationName = getParamAsBoolean("debugAnimationName");
 
-/**
- * @typedef {{ x: number, y: number }} Vector2
- */
 
-/**
- * 
- * @param {number} x 
- * @param {number} y 
- * 
- * @returns {Vector2}
- */
-const vec2 = (x, y) => ({ x, y });
-
-/**
- * @note Não funciona com número muitos grandes 2e22 por exemplo
- * 
- * @param {number} n 
- * @returns {boolean}
- */
-const isInteger = (n) => n === ~~n;
 
 const EntityExtensions = {
     hitted: Symbol.for('Entity.hitted'),
@@ -237,18 +222,6 @@ class EntityBehaviorManager {
 const levelContext = {
     lost: 0,
     hitted: 0,
-}
-
-/**
- * Função criada para auxiliar na depuração pelo console do navegador
- * @param {*} object 
- * @param {*} name 
- */
-function registerAsGlobal(object, name = null) {
-    const bindingName = name === null ? object.name : name; 
-
-    console.log(`Making global: ${bindingName}`);
-    window[bindingName] = object;
 }
 
 // registerAsGlobal(EntityBehaviorManager);
@@ -625,7 +598,7 @@ function main(timestamp = 0) {
                     [ runAction, [ (dog) => { dog.layer = 2; dog.position = vec2(125, ~~(NES.height * 0.7)); dog.visible = true; setEntityAnimation(dog, 'got1duck') } ]],
                     [ moveBehavior, [ { from: vec2(125, ~~(NES.height * 0.7)), to: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.5 ]],
                     [ changeSprite, [ 'got1duck', .5 ]],
-                    [ moveBehavior, [ { to: vec2(125, ~~(NES.height * 0.7)), from: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.75 ]],
+                    [ moveBehavior, [ { to: vec2(125, ~~(NES.height * 0.7)), from: vec2(125, ~~(NES.height * 0.58)) }, false, false, 0.5 ]],
                     [ runAction, [ (dog) => { dog.visible = false; } ]],
                     [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
                 ]));    
