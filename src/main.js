@@ -1,18 +1,14 @@
 import { AnimatedSprite, Sprite, makeFrameSequence } from './sprites.js';
 import { createCanvas, getParamAsBoolean, isInteger, registerAsGlobal, vec2 } from './utils.js';
-import { Logger, LoggerManager } from './logger.js'
+import { LoggerManager, behaviorLogger, inputLogger, mainLogger } from './logger.js'
 import { Entity, EntityExtensions } from './entity.js';
+import { EntityBehaviorManager } from './entity-behavior-manager.js';
 
 /**
  * @typedef {import('./utils.js').Vector2} Vector2
  */
 
 LoggerManager.initFromQueryString('loggerFilter');
-
-const mainLogger = new Logger('main');
-const inputLogger = new Logger('input');
-const behaviorLogger = new Logger('behavior');
-
 
 const debugHitArea = getParamAsBoolean("debugHitArea");
 const debugAnimationName = getParamAsBoolean("debugAnimationName");
@@ -128,31 +124,6 @@ const backgrounds = [ backgroundSprite ];
  * @type {boolean}
  */
 let behaviorManagerInitted = false;
-
-class EntityBehaviorManager {
-
-    static behaviors = [];
-
-    static register(behavior) {
-        this.behaviors.push(behavior);
-    }
-
-    static runNextTick(timestamp) {
-        const notCompleted = []; 
-        for (const behaviorRunner of this.behaviors)
-        {
-            const { value, done } = behaviorRunner.next(timestamp)
-    
-            if (done) {
-                behaviorLogger.log('finalizando um comportamento');
-            } else {
-                notCompleted.push(behaviorRunner);
-            }
-        }
-
-        this.behaviors = notCompleted;
-    }
-}
 
 const levelContext = {
     lost: 0,

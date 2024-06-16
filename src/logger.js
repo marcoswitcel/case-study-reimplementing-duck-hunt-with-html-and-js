@@ -103,3 +103,10 @@ export class Logger {
         LoggerManager.turnOff(this.agent);
     }
 }
+
+/**
+ * Loggers da aplicação
+ */
+export const mainLogger = new Logger('main');
+export const inputLogger = new Logger('input');
+export const behaviorLogger = new Logger('behavior');
