@@ -294,6 +294,7 @@ function generateDuckSteps() {
 
     let lastPoint = startPoint;
     for (let i = 0; i < numberOfSteps; i++) {
+        // @todo João, deixar velocidade constante
         const newPoint = vec2(
             100 + ((Math.random() - 0.5) * 2 * 100),
             175 + (Math.random() *  -125) - 30
