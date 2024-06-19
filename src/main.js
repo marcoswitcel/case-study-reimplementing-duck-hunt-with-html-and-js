@@ -285,6 +285,19 @@ function *moveBehavior(entity, timestamp, { from, to }, loop = false, reversed =
     }
 }
 
+/**
+ * Calcula a distância entre dois pontos
+ * @param {*} p1 
+ * @param {*} p2 
+ * @returns 
+ */
+function distance(p1, p2) {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+
+    return Math.sqrt(dx*dx + dy*dy);
+}
+
 function generateDuckSteps() {
     const startPoint = vec2(100, 175);
     const result = [];
@@ -343,6 +356,8 @@ function *duckBehavior(entity, timestamp) {
 
         setEntityAnimation(entity, animationName);
 
+        // @todo João, terminar de configurar a velocidade aqui
+        const totalTime = distance(fromToDirection.from, fromToDirection.to) / 50;
         // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
