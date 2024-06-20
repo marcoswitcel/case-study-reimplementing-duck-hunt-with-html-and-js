@@ -436,14 +436,7 @@ function main(timestamp = 0) {
             for (const entity of entities) {
                 // @note João, criar atributo e objeto pra representar objetos 'clicáveis'
                 if (entity.type == 'duck' || entity.type == 'dog') {
-                    const dx = entity.position.x - coord.x;
-                    const dy = entity.position.y - coord.y;
-
-                    const distance = Math.sqrt(dx*dx + dy*dy);
-                    
-                    // @note por hora os patos são figuras quadradas, porém eventualmente deveria
-                    // permitir configurar por entidade o raio de colisão 
-                    if (distance < entity[EntityExtensions.hitRadius]) {
+                    if (distance(entity.position, coord) < entity[EntityExtensions.hitRadius]) {
                         entity[EntityExtensions.hitted] = true;
                         levelContext.hitted++;
                     }
