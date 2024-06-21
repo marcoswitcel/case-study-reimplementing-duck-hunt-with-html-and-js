@@ -69,3 +69,17 @@ export const EntityExtensions = {
     animationState: Symbol.for('Entity.animationState'),
     animationMap: Symbol.for('Entity.animationMap'),
 }
+
+export function setEntityAnimation(entity, animationStateName) {
+    if (animationStateName && entity[EntityExtensions.animationMap]) {
+
+        entity[EntityExtensions.animationState] = animationStateName;
+        entity.renderable = entity[EntityExtensions.animationMap][animationStateName];
+        
+        console.assert(entity.renderable);
+        return;
+    }
+    
+    console.assert(animationStateName);
+    console.assert(entity[EntityExtensions.animationMap]);
+}

@@ -5,6 +5,8 @@
 
 const params = new URLSearchParams(window.location.search);
 
+export const NES = { width: 256, height: 240, };
+
 /**
  * Cria um canvas com as dimensões especificadas e adiciona ele a algum elemnto
  * caso o parâmetro `appendTo` seja especificado
@@ -61,3 +63,16 @@ export const vec2 = (x, y) => ({ x, y });
  * @returns {boolean}
  */
 export const isInteger = (n) => n === ~~n;
+
+/**
+ * Calcula a distância entre dois pontos
+ * @param {*} p1 
+ * @param {*} p2 
+ * @returns 
+ */
+export function distance(p1, p2) {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+
+    return Math.sqrt(dx*dx + dy*dy);
+}
