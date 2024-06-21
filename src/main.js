@@ -183,8 +183,6 @@ function main(timestamp = 0) {
             [ runAction, [ (_, timestamp) => { addFlyingDuck(timestamp); } ]],
         ]));
     }
-    
-    // @todo João, implementar um sistema para descrever animações/eventos e modificações em sprites ou entidades, não sei ainda se preciso de entidades para a animação, talvez só sprites funcionem
 
     EntityBehaviorManager.runNextTick(timestamp);
 

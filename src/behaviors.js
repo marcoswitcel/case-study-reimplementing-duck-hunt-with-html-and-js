@@ -163,7 +163,6 @@ function generateDuckSteps() {
 
     let lastPoint = startPoint;
     for (let i = 0; i < numberOfSteps; i++) {
-        // @todo João, deixar velocidade constante
         const newPoint = vec2(
             100 + ((Math.random() - 0.5) * 2 * 100),
             175 + (Math.random() *  -125) - 30
@@ -181,7 +180,6 @@ function generateDuckSteps() {
 }
 
 /**
- * @todo João, adicionar lógica de movimento do pato e troca para animação de queda
  * @param {*} entity 
  * @param {*} timestamp
  * @returns 
@@ -204,6 +202,7 @@ export function *duckBehavior(entity, timestamp) {
         behaviorLogger.logAsJson(fromToDirection)
         currentTimestamp = yield;
 
+        // @note deduzindo o sprite mais apropriado de acordo com a direção do movimento
         let animationName = (fromToDirection.from.x < fromToDirection.to.x) ? 'flying.right' : 'flying.left';
         
         if (fromToDirection.from.y > fromToDirection.to.y) {
@@ -214,7 +213,6 @@ export function *duckBehavior(entity, timestamp) {
 
         // @todo João, terminar de configurar a velocidade aqui
         const totalTime = distance(fromToDirection.from, fromToDirection.to) / 50;
-        // @todo João deduzir sprite mais apropriado de acordo com a direção do movimento
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
         let { done } = instance.next(currentTimestamp);
