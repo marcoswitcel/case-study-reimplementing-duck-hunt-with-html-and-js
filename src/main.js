@@ -283,7 +283,6 @@ function main(timestamp = 0) {
 }
 
 canvas.addEventListener('click', (event) => {
-    // @todo João, revisar essa conversão
     const ratio = canvas.clientWidth / NES.width;
     const boundings = canvas.getBoundingClientRect();
     // posição menos offset do canvas e reescalado para compensar o escalonamento atual do canvas
