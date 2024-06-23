@@ -22,9 +22,22 @@ canvas.style.imageRendering = 'pixelated';
 const ctx = canvas.getContext('2d');
 
 // layers
+/**
+ * @type {HTMLCanvasElement} Canvas usado para compor os elementos da
+ * camada frontal (primeira camanada). Aqui é renderizado a vegetação e
+ * cão durante a cena de abertura.
+ * @todo João, os elementos de UI estão temporariamente nessa camada, fixos
+ * avaliar e implementar renderização desses elementos assim que forem separados
+ * da vegetação.
+ */
 const layer01 = createCanvas(NES.width, NES.height);
 layer01.style.imageRendering = 'pixelated';
 const ctxLayer01 = layer01.getContext('2d');
+/**
+ * @type {HTMLCanvasElement} Canvas usado para compor os elementos da
+ * camada do fundo (segunda camanada). Aqui é renderizado a cor sólida
+ * do céu e os patos e o cão, após ele saltar atrás das plantas.
+ */
 const layer02 = createCanvas(NES.width, NES.height);
 layer02.style.imageRendering = 'pixelated';
 const ctxLayer02 = layer02.getContext('2d');
@@ -275,7 +288,7 @@ function main(timestamp = 0) {
         entities.splice(0, entities.length, ...entities.filter(entity => !entity.removed));
     }
 
-    // Compoem imagem
+    // Compondo layers para formar a imagem final
     ctx.drawImage(layer02, 0, 0);
     ctx.drawImage(layer01, 0, 0);
 

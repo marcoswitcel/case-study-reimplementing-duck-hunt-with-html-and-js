@@ -4,6 +4,10 @@ import { NES, distance, vec2 } from './utils.js';
 import { levelContext } from './level-context.js';
 
 /**
+ * @typedef {import('./utils.js').Vector2} Vector2
+ */
+
+/**
  * 
  * @param {Entity} dog 
  * @param {number} timestamp 
@@ -154,6 +158,11 @@ export function *moveBehavior(entity, timestamp, { from, to }, loop = false, rev
     }
 }
 
+/**
+ * Gera entre 3 à 7 coordenadas, sendo a primeira abaixo da linha visível e a última acima do
+ * topo da tela, as outras coordenadas são completamente aleatórias no momento
+ * @returns {{ from: Vector2, to: Vector2}[]}
+ */
 function generateDuckSteps() {
     const startPoint = vec2(100, 175);
     const result = [];
@@ -185,14 +194,8 @@ function generateDuckSteps() {
  * @returns 
  */
 export function *duckBehavior(entity, timestamp) {
-    const initialTimestamp = timestamp;
     const totalTime = 4;
 
-    /**
-     * @todo João, gerar 4 ou 5 etapas no movimento até finalmente sair da tela,
-     * criar uma função para definir esse movimento para cada pato. Mas no geral
-     * pensei em criar uma padrão de 4 a 6 etapas semialeatório.
-     */
     const steps = generateDuckSteps();
     let fromToDirection;
     let currentTimestamp;

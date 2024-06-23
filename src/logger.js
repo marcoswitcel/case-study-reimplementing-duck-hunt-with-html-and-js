@@ -1,7 +1,6 @@
 
 const TYPE_NULL = 0;
 const TYPE_CONSOLE = 1;
-const TYPE_LOCAL_STORAGE = 1 << 1;
 
 export class LoggerManager {
     /**
@@ -62,10 +61,7 @@ export class Logger {
 
     constructor(agent) {
         this.agent = agent;
-        /**
-         * @todo João, avaliar se faz sentido deixar pro localstorage por padrão
-         */
-        this.type = 0 | TYPE_CONSOLE | TYPE_LOCAL_STORAGE;
+        this.type = 0 | TYPE_CONSOLE;
     }
 
     /**
