@@ -234,15 +234,17 @@ export function *duckBehavior(entity, timestamp) {
 
     if (isFalling) {
         currentTimestamp = yield;
-        yield *changeSprite(entity, currentTimestamp, 'hit', 0.500);
+        yield *changeSprite(entity, currentTimestamp, 'hit', 0.350);
 
         setEntityAnimation(entity, 'falling');
 
         currentTimestamp = yield;
+        const from = vec2(entity.position.x, entity.position.y);
+        const to = vec2(entity.position.x, entity.position.y + 100);
+        const fallTime = distance(from, to) / 80;
         yield *moveBehavior(entity, currentTimestamp, {
-            from: vec2(entity.position.x, entity.position.y),
-            to: vec2(entity.position.x, entity.position.y + 100),
-        }, false, false, totalTime / 2);
+            from, to,
+        }, false, false, fallTime);
     }
 
     entity.removed = true;
