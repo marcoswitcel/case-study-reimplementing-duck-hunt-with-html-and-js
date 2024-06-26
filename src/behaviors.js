@@ -188,6 +188,8 @@ function generateDuckSteps() {
     return result.reverse();
 }
 
+const DUCK_SPEED_IN_PIXELS = 50;
+
 /**
  * @param {*} entity 
  * @param {*} timestamp
@@ -214,8 +216,7 @@ export function *duckBehavior(entity, timestamp) {
 
         setEntityAnimation(entity, animationName);
 
-        // @todo João, terminar de configurar a velocidade aqui
-        const totalTime = distance(fromToDirection.from, fromToDirection.to) / 50;
+        const totalTime = distance(fromToDirection.from, fromToDirection.to) / DUCK_SPEED_IN_PIXELS;
         const instance = moveBehavior(entity, currentTimestamp, fromToDirection, false, false, totalTime);
 
         let { done } = instance.next(currentTimestamp);

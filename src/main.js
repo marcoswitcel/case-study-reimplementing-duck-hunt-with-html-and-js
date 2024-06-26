@@ -140,9 +140,11 @@ entities.push(dog);
 // talvez um buffer de eventos? (muito complexo para o que eu preciso, eu desduplicaria mouseMove?), talvez
 // apenas uma estrutura com mousePos, e mouseDown, e isRepeat (pra saber se é o primeiro mouse down) e preciso
 // saber quando rolou o mouse up?
-const mouseContext = {
-    lastClicked: null
-}
+const app = {
+    input: {
+        lastClicked: null,
+    },
+};
 
 let lastTimestamp = 0;
 
@@ -153,33 +155,36 @@ function addFlyingDuck(timestamp) {
     mainLogger.log("adicionando pato...");
 }
 
-function main(timestamp = 0) {
-    const deltaTime = lastTimestamp - timestamp;
-    lastTimestamp = timestamp;
-
-    if (!timestamp || !lastTimestamp) {
-        requestAnimationFrame(main);
-        return;
-    }
-
-    // lidando com input
-    inputContext: { // @todo João, trabalho em progesso
-        const coord = mouseContext.lastClicked
-        
-        if (coord) {
-            for (const entity of entities) {
-                // @note João, criar atributo e objeto pra representar objetos 'clicáveis'
-                if (entity.type == 'duck' || entity.type == 'dog') {
-                    if (distance(entity.position, coord) < entity[EntityExtensions.hitRadius]) {
-                        entity[EntityExtensions.hitted] = true;
-                        levelContext.hitted++;
-                    }
+function processClickableEntities() {
+    const coord = app.input.lastClicked
+    
+    if (coord) {
+        for (const entity of entities) {
+            // @note João, criar atributo e objeto pra representar objetos 'clicáveis'
+            if (entity.type == 'duck' || entity.type == 'dog') {
+                if (distance(entity.position, coord) < entity[EntityExtensions.hitRadius]) {
+                    entity[EntityExtensions.hitted] = true;
+                    levelContext.hitted++;
                 }
             }
         }
     }
 
-    mouseContext.lastClicked = null;
+    // @note dveria ser feito ao final do frame
+    app.input.lastClicked = null;
+}
+
+function main(timestamp = 0) {
+    const deltaTime = lastTimestamp - timestamp;
+    lastTimestamp = timestamp;
+    
+    if (!timestamp || !lastTimestamp) {
+        requestAnimationFrame(main);
+        return;
+    }
+    
+    // lidando com input
+    processClickableEntities();
 
     if (!behaviorManagerInitted) {
         behaviorManagerInitted = true;
@@ -301,7 +306,7 @@ canvas.addEventListener('click', (event) => {
     // posição menos offset do canvas e reescalado para compensar o escalonamento atual do canvas
     const coords = { x: (event.clientX - boundings.x) / ratio, y: (event.clientY - boundings.y) / ratio, };
 
-    mouseContext.lastClicked = coords;
+    app.input.lastClicked = coords;
     inputLogger.logAsJson(coords);
 });
 
