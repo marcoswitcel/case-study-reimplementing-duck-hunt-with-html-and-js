@@ -5,6 +5,7 @@ import { Entity, EntityExtensions, setEntityAnimation } from './entity.js';
 import { EntityBehaviorManager } from './entity-behavior-manager.js';
 import { changeSprite, composeBehaviors, duckBehavior, moveBehavior, runAction, wait } from './behaviors.js';
 import { levelContext } from './level-context.js';
+import { backgroundResourceLocation, dogResourceLocation, duckResourceLocation } from './assets.js';
 
 /**
  * @typedef {import('./utils.js').Vector2} Vector2
@@ -44,13 +45,11 @@ const ctxLayer02 = layer02.getContext('2d');
 
 const image = new Image;
 
-// @todo João, ajustar essa urls para não serem fixas
-image.src = './assets/NES - Duck Hunt - The Dog - transparent.png';
+image.src = dogResourceLocation;
 
 const background = new Image;
 
-// @todo João, ajustar essa urls para não serem fixas
-background.src = './assets/NES - Duck Hunt - Backgrounds - transparent.png';
+background.src = backgroundResourceLocation;
 
 const dog = new Entity(
     'dog',
@@ -75,9 +74,7 @@ setEntityAnimation(dog, 'walking');
 
 const duckImage = new Image;
 
-// @todo João, ajustar essa urls para não serem fixas
-// @todo João, fazer uma versão com fundo transparente no GIMP
-duckImage.src = './assets/NES - Duck Hunt - Ducks - transparent.png';
+duckImage.src = duckResourceLocation;
 
 const duckSpritesVariations = [];
 
