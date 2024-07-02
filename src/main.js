@@ -287,6 +287,15 @@ function main(timestamp = 0) {
 
     }
 
+    // UI temporária
+    ctxLayerUI.font = '10px monospace';
+    ctxLayerUI.fillStyle = 'white';
+    ctxLayerUI.fillText(`hitted: ${levelContext.hitted}`, 6, 12);
+
+    ctxLayerUI.font = '10px monospace';
+    ctxLayerUI.fillStyle = 'white';
+    ctxLayerUI.fillText(`lost: ${levelContext.lost}`, 6, 25);
+
     // removendo entidades deletadas
     if (entities.some(entity => entity.removed))
     {

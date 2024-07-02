@@ -246,8 +246,9 @@ export function *duckBehavior(entity, timestamp) {
         yield *moveBehavior(entity, currentTimestamp, {
             from, to,
         }, false, false, fallTime);
+    } else {
+        levelContext.lost++;
     }
 
     entity.removed = true;
-    levelContext.lost++;
 }
