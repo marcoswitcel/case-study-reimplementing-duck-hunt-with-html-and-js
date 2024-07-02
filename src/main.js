@@ -43,6 +43,11 @@ const layer02 = createCanvas(NES.width, NES.height);
 layer02.style.imageRendering = 'pixelated';
 const ctxLayer02 = layer02.getContext('2d');
 
+// @todo João, terminar o layer da UI
+const layerUI = createCanvas(NES.width, NES.height);
+layerUI.style.imageRendering = 'pixelated';
+const ctxLayerUI = layerUI.getContext('2d')
+
 const image = new Image;
 
 image.src = dogResourceLocation;
@@ -209,6 +214,7 @@ function main(timestamp = 0) {
 
     // limpa layer
     ctxLayer01.clearRect(0, 0, NES.width, NES.height);
+    ctxLayerUI.clearRect(0, 0, NES.width, NES.height);
 
     for (const current of backgrounds) {
         ctxLayer01.drawImage(current.source, current.offsetX, current.offsetY, current.width, current.height);
@@ -293,6 +299,7 @@ function main(timestamp = 0) {
     // Compondo layers para formar a imagem final
     ctx.drawImage(layer02, 0, 0);
     ctx.drawImage(layer01, 0, 0);
+    ctx.drawImage(layerUI, 0, 0);
 
     requestAnimationFrame(main);
 }
